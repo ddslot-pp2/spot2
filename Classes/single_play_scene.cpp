@@ -68,10 +68,12 @@ bool single_play_scene::init()
   // 2. add a menu item with "X" image, which is clicked to quit the program
   //    you may modify it.
 
+  
   // add a "close" icon to exit the progress. it's an autorelease object
+  /*
   auto closeItem = MenuItemImage::create(
 					 "CloseNormal.png",
-					 "CloseSelected.png",
+					 "Closeected.png",
 					 CC_CALLBACK_1(single_play_scene::menuCloseCallback, this));
     
   closeItem->setPosition(Vec2(origin_.x + visibleSize.width - closeItem->getContentSize().width/2 ,
@@ -81,6 +83,7 @@ bool single_play_scene::init()
   auto menu = Menu::create(closeItem, nullptr);
   menu->setPosition(Vec2::ZERO);
   this->addChild(menu, 1);
+  */
 
   /////////////////////////////
   // 3. add your codes below...
@@ -149,7 +152,7 @@ bool single_play_scene::init()
   EventDispatcher* _event_dispatcher = Director::getInstance()->getEventDispatcher();
   _event_dispatcher->addEventListenerWithSceneGraphPriority(touch_listener, this);
 
-  //  this->scheduleUpdate();
+  //this->scheduleUpdate();
 
   return true;
 }
@@ -244,7 +247,7 @@ void single_play_scene::on_http_request_completed(HttpClient *sender, HttpRespon
     ++download_count_;
     if (download_count_ >= 2) {
       //label_->setString("Loading Textures Done");
-      start_game();
+      start_game();   
     }
   }
   else if (response->getHttpRequest()->getTag() == std::string("stage_info")) {
@@ -359,7 +362,11 @@ void single_play_scene::start_game() {
   curtain_right_img_->runAction(Sequence::create(Show::create(), FadeOut::create(2.0), nullptr));
 
   // 커튼같은거 치우고나서부터 게임이 시작
-  this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_start_game), 1.0f);
+  
+ 
+
+  //this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_start_game), 1.0f);
+  this->scheduleOnce(schedule_selector(single_play_scene::on_start_game), 1.0f);
 
   auto ready = Sprite::create("ui/ready2.png");
   ready->setPosition(Vec2(center_.x, center_.y + 50));
@@ -385,9 +392,11 @@ void single_play_scene::start_game() {
 		  );
 }
 
-void single_play_scene::on_start_game() {
+void single_play_scene::on_start_game(float dt) 
+{
   create_pause();
-  this->schedule(SEL_SCHEDULE(&single_play_scene::on_update_timer), 1/10);
+  this->schedule(schedule_selector(single_play_scene::on_update_timer), 1.0f/10.0f);
+  //this->schedule(SEL_SCHEDULE(&single_play_scene::on_update_timer), 1/10);
 }
 
 void single_play_scene::pause_game() {
@@ -395,7 +404,7 @@ void single_play_scene::pause_game() {
   curtain_left_img_->runAction(Sequence::create(Show::create(), FadeIn::create(1.0), nullptr));
   curtain_right_img_->runAction(Sequence::create(Show::create(), FadeIn::create(1.0), nullptr));
 
-  this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::open_pause_menu), 1.0f);
+  this->scheduleOnce(schedule_selector(single_play_scene::open_pause_menu), 1.0f);
 }
 
 void single_play_scene::resume_game() {
@@ -471,7 +480,7 @@ void single_play_scene::correct_effect(int index) {
 void single_play_scene::incorrect_effect(Point point) {
   enable_input_ = false;
   CCLOG("XX incorrect answer XX");
-  this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::done_incorrect_effect), 0.8f);
+  this->scheduleOnce(schedule_selector(single_play_scene::done_incorrect_effect), 0.8f);
   
   auto audio = SimpleAudioEngine::getInstance();
   audio->playEffect("sound/incorrect.wav");
@@ -511,7 +520,7 @@ void single_play_scene::incorrect_effect(Point point) {
   }
 }
 
-void single_play_scene::done_incorrect_effect() {
+void single_play_scene::done_incorrect_effect(float dt) {
   enable_input_ = true; 
 }
 
@@ -528,7 +537,7 @@ void single_play_scene::create_pause() {
 	  }
 
 	  is_allowing_input_ = false;
-	  this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_allowing_input), 2.1f);
+	  this->scheduleOnce(schedule_selector(single_play_scene::on_allowing_input), 2.1f);
 
 	  if(!is_pause_button_) {
 	    return false;
@@ -571,7 +580,7 @@ void single_play_scene::create_pause() {
 	  }
 
 	  is_allowing_input_ = false;
-	  this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_allowing_input), 2.1f);
+	  this->scheduleOnce(schedule_selector(single_play_scene::on_allowing_input), 2.1f);
 	  //if(!is_pause_button_) {
 	  //return false;
 	  //}
@@ -579,7 +588,7 @@ void single_play_scene::create_pause() {
 	  paused_navigation_menu_->setVisible(false);
 
 	  //is_pause_button_ = false;
-	  this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_unlock_pause_button), 2.0f);
+	  this->scheduleOnce(schedule_selector(single_play_scene::on_unlock_pause_button), 2.0f);
 
 	  resume_button->setBright(false);
 	  resume_button->setEnabled(false);
@@ -633,14 +642,15 @@ void single_play_scene::create_timer() {
   this->addChild(progress_timebar_, 1);
 }
 
-void single_play_scene::on_update_timer() {
+void single_play_scene::on_update_timer(float dt) {
 
   //CCLOG("percentage: %f", progress_timebar_->getPercentage());
 
   if(single_play_status_ != PLAYING) return;
   // 1분
 
-  if (progress_timebar_->getPercentage() <= 0.0f) {
+  if (progress_timebar_->getPercentage() <= 0.0f) 
+  {
     game_over();
   }
 
@@ -672,7 +682,7 @@ void single_play_scene::update_spot_info(int total_spot_count) {
   if (answer_count == total_spot_count) {
     // end of stage callback with timer
     single_play_status_ = RESULT;
-    this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_complete_stage), 1.0f);
+    this->scheduleOnce(schedule_selector(single_play_scene::on_complete_stage), 1.0f);
   }
 
   draw_spot_info(answer_count, total_spot_count);
@@ -693,7 +703,7 @@ void single_play_scene::draw_spot_info(int found_spot_count, int total_spot_coun
   spot_info_font_->setString(spot_info_font.c_str());
 }
 
-void single_play_scene::on_complete_stage() {
+void single_play_scene::on_complete_stage(float dt) {
   CCLOG("on_complete_stage called\n");
   auto next_stage = stage_info_->current_stage_count + 1;
   save_user_info("current_stage", next_stage);
@@ -704,13 +714,13 @@ void single_play_scene::on_load_item_store() {
   Director::getInstance()->pushScene(item_store_scene);
 }
 
-void single_play_scene::open_pause_menu() {
+void single_play_scene::open_pause_menu(float dt) {
 
   //is_allowing_input_ = false;
   
-  auto item_1 = MenuItemFont::create("계속하기" , CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
-  auto item_2 = MenuItemFont::create("랭킹보기" , CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
-  auto item_3 = MenuItemFont::create("나가기2" , CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
+  auto item_1 = MenuItemFont::create("Resume" , CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
+  auto item_2 = MenuItemFont::create("Show Ranking" , CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
+  auto item_3 = MenuItemFont::create("Exit" , CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
      
   paused_navigation_menu_ = Menu::create(item_1, item_2, item_3, NULL);
   paused_navigation_menu_->alignItemsVerticallyWithPadding(30);
@@ -725,9 +735,9 @@ void single_play_scene::close_pause_menu(cocos2d::Ref* pSender) {
     return;
   }
 
-  this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_allowing_input), 2.1f);
+  this->scheduleOnce(schedule_selector(single_play_scene::on_allowing_input), 2.1f);
 
-  this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_unlock_pause_button), 2.0f);
+  this->scheduleOnce(schedule_selector(single_play_scene::on_unlock_pause_button), 2.0f);
 
   resume_button->setBright(false);
   resume_button->setEnabled(false);
@@ -739,12 +749,12 @@ void single_play_scene::close_pause_menu(cocos2d::Ref* pSender) {
   paused_navigation_menu_->setVisible(false);
 }
  
-void single_play_scene::on_unlock_pause_button() {
+void single_play_scene::on_unlock_pause_button(float dt) {
   CCLOG("on unlock called");
   is_pause_button_ = true;
 }
 
-void single_play_scene::on_allowing_input() {
+void single_play_scene::on_allowing_input(float dt) {
   if(!is_allowing_input_) is_allowing_input_ = true;
 }
 
@@ -785,16 +795,16 @@ void single_play_scene::game_over() {
   game_over->setPosition(center_);
   this->addChild(game_over, 2);
 
-  this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_create_end_navigation_menu), 1.0f);
+  this->scheduleOnce(schedule_selector(single_play_scene::on_create_end_navigation_menu), 1.0f);
 
   CCLOG("game over");
 }
 
-void single_play_scene::on_create_end_navigation_menu() {
+void single_play_scene::on_create_end_navigation_menu(float dt) {
   
-  auto item_1 = MenuItemFont::create("다시하기", CC_CALLBACK_1(single_play_scene::retry_game, this));
-  auto item_2 = MenuItemFont::create("랭킹보기" , CC_CALLBACK_1(single_play_scene::view_ranking, this));
-  auto item_3 = MenuItemFont::create("나가기2", CC_CALLBACK_1(single_play_scene::end_game, this));
+  auto item_1 = MenuItemFont::create("Restart", CC_CALLBACK_1(single_play_scene::retry_game, this));
+  auto item_2 = MenuItemFont::create("Show Ranking" , CC_CALLBACK_1(single_play_scene::view_ranking, this));
+  auto item_3 = MenuItemFont::create("Exit", CC_CALLBACK_1(single_play_scene::end_game, this));
   
   auto end_navigation_menu_ = Menu::create(item_1, item_2, item_3, NULL);
   end_navigation_menu_->alignItemsVerticallyWithPadding(30);

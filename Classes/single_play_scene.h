@@ -54,7 +54,7 @@ public:
     void start_game();
     void end_game(cocos2d::Ref* pSender);
 
-    void on_start_game();
+    void on_start_game(float dt);
 
     void pause_game();
     void resume_game();
@@ -80,32 +80,32 @@ public:
 
     void correct_effect(int index);
     void incorrect_effect(Point point);
-    void done_incorrect_effect();
+    void done_incorrect_effect(float dt);
 
     void create_pause();
     void create_timer();
-    void on_update_timer();
+    void on_update_timer(float dt);
 
     void draw_stage_info(int current_stage=1, int end_stage=102);
     void update_spot_info(int total_spot_count=0);
     void draw_spot_info(int found_spot_count=0, int total_spot_count=5);
  
-    void on_complete_stage();
+    void on_complete_stage(float dt);
     
     void on_load_item_store();
   
-    void open_pause_menu();
+    void open_pause_menu(float dt);
     void close_pause_menu(cocos2d::Ref* pSender);
 
-    void on_allowing_input();
+    void on_allowing_input(float dt);
 
     void game_over();
 
  private:
     void start_circle_animation(Vec2 pos);
-    void on_unlock_pause_button();
+    void on_unlock_pause_button(float dt);
 
-    void on_create_end_navigation_menu();
+    void on_create_end_navigation_menu(float dt);
 
     Texture2D left_texture;
     Texture2D right_texture;
