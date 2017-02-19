@@ -105,3 +105,5 @@ proj.win32/Release.*/
 
 # others
 cocos2d/
+*.VC.db
+*.suo

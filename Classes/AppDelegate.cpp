@@ -1,9 +1,12 @@
 #include "AppDelegate.h"
-#include "HelloWorldScene.h"
+#include "single_play_scene.h"
+#include "pre_defined.h"
 
 USING_NS_CC;
 
-static cocos2d::Size designResolutionSize = cocos2d::Size(480, 320);
+static cocos2d::Size designResolutionSize = cocos2d::Size(iphone6_width, iphone6_height);
+static cocos2d::Size deviceResolutionSize = cocos2d::Size(iphone6_width, iphone6_height);
+
 static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
@@ -39,9 +42,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto glview = director->getOpenGLView();
     if(!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-        glview = GLViewImpl::createWithRect("spot2", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
+      glview = GLViewImpl::createWithRect("spot_ranking", Rect(0, 0, 1920/2, 1080/2));
+      //glview = GLViewImpl::createWithRect("spot_ranking", Rect(0, 0, ipad_mini4_width/2, ipad_mini4_height/2));
+
 #else
-        glview = GLViewImpl::create("spot2");
+        glview = GLViewImpl::create("spot_ranking");
 #endif
         director->setOpenGLView(glview);
     }
@@ -53,31 +58,21 @@ bool AppDelegate::applicationDidFinishLaunching() {
     director->setAnimationInterval(1.0f / 60);
 
     // Set the design resolution
-    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
-    auto frameSize = glview->getFrameSize();
-    // if the frame's height is larger than the height of medium size.
-    if (frameSize.height > mediumResolutionSize.height)
-    {        
-        director->setContentScaleFactor(MIN(largeResolutionSize.height/designResolutionSize.height, largeResolutionSize.width/designResolutionSize.width));
-    }
-    // if the frame's height is larger than the height of small size.
-    else if (frameSize.height > smallResolutionSize.height)
-    {        
-        director->setContentScaleFactor(MIN(mediumResolutionSize.height/designResolutionSize.height, mediumResolutionSize.width/designResolutionSize.width));
-    }
-    // if the frame's height is smaller than the height of medium size.
-    else
-    {        
-        director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
-    }
+    //glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
+    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::FIXED_WIDTH);
+
+    director->setContentScaleFactor(MIN(deviceResolutionSize.height/designResolutionSize.height, deviceResolutionSize.width/designResolutionSize.width));
 
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    auto scene = HelloWorld::createScene();
+    auto scene = single_play_scene::createScene();
+    //auto scene = menu_scene::createScene();
 
     // run
     director->runWithScene(scene);
+
+    cocos2d::Device::setKeepScreenOn(true);
 
     return true;
 }
@@ -97,3 +92,6 @@ void AppDelegate::applicationWillEnterForeground() {
     // if you use SimpleAudioEngine, it must resume here
     // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
 }
+
+//CCUserDefault 저장할때 사용
+
