@@ -43,5 +43,7 @@ double get_user_info<double>(const std::string& key);
 template<>
 std::string get_user_info<std::string>(const std::string& key);
 
+void reset_user_info();
+
 #endif
 

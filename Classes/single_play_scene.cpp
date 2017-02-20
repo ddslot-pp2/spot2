@@ -42,10 +42,13 @@ bool single_play_scene::init()
   //save_user_info("current_stage", 1);
 
   auto current_stage = get_user_info<int>("current_stage");
-  if(current_stage == 0) {
-    save_user_info("current_stage", 1);
+  if(current_stage <= 1) 
+  {
+    reset_user_info();
     current_stage = get_user_info<int>("current_stage");
   }
+
+  auto item_count = get_user_info<int>("hint_count");
 
   CCLOG("string test: %d \n", current_stage);
 
@@ -54,6 +57,8 @@ bool single_play_scene::init()
   // http request for gathering stage information
   CCLOG("1\n");
   
+  auto get_uid = "sadsadasdasd";
+
   auto req_url = std::string(req_stage_info_url) + to_string2(current_stage);
   http_request(req_url.c_str(), "stage_info");
   CCLOG("3\n");  
@@ -132,6 +137,7 @@ bool single_play_scene::init()
   status->setPosition(status_position);
   this->addChild(status, 1);
 
+  /*
   auto search = Sprite::create("ui/search.png");
   search_position_ = Vec2(
 			      time_bar->getContentSize().width + 400 + (status->getContentSize().width * 0.5f) + 220, 
@@ -139,6 +145,10 @@ bool single_play_scene::init()
 
   search->setPosition(search_position_);
   this->addChild(search, 1);
+  */
+  
+  // 힌트 버튼 추가
+
   
   // handle input
   auto touch_listener = EventListenerTouchOneByOne::create();
@@ -157,7 +167,8 @@ bool single_play_scene::init()
   return true;
 }
 
-void single_play_scene::menuCloseCallback(Ref* pSender) {
+void single_play_scene::menuCloseCallback(Ref* pSender) 
+{
   //Close the cocos2d-x game scene and quit the application
   Director::getInstance()->end();
 
@@ -171,7 +182,8 @@ void single_play_scene::menuCloseCallback(Ref* pSender) {
   //_eventDispatcher->dispatchEvent(&customEndEvent);
 }
 
-void single_play_scene::http_request(std::string url, std::string tag) {
+void single_play_scene::http_request(std::string url, std::string tag) 
+{
   
   auto request = new HttpRequest();
 
@@ -189,25 +201,29 @@ void single_play_scene::http_request(std::string url, std::string tag) {
 
 void single_play_scene::on_http_request_completed(HttpClient *sender, HttpResponse *response) {
 
-  if(!response) {
+  if(!response) 
+  {
     CCLOG("response is not true\n");  
     return;
   }
 
   auto response_code = response->getResponseCode();
   
-  if(!response->isSucceed()) {
+  if(!response->isSucceed()) 
+  {
     //std::cout << "error code: " << response_code << std::endl;
     CCLOG("response is not success, response code: %ld\n", response_code);
     return;
   }
 
-  if(response_code != 200) {
+  if(response_code != 200) 
+  {
     CCLOG("response code is not 200\n");
     return;
   }
 
-  if (0 != strlen(response->getHttpRequest()->getTag())) {
+  if (0 != strlen(response->getHttpRequest()->getTag())) 
+  {
       CCLOG("%s completed", response->getHttpRequest()->getTag());
   }
 
@@ -219,18 +235,22 @@ void single_play_scene::on_http_request_completed(HttpClient *sender, HttpRespon
 
 
   if(response->getHttpRequest()->getTag() == std::string("left_img") || 
-     response->getHttpRequest()->getTag() == std::string("right_img")) {
+     response->getHttpRequest()->getTag() == std::string("right_img")) 
+  {
     Image* image = new Image();
     image->initWithImageData ( reinterpret_cast<const unsigned char*>(&(buffer->front())), buffer->size());
   
-    if(response->getHttpRequest()->getTag() == std::string("left_img")) {
+    if(response->getHttpRequest()->getTag() == std::string("left_img")) 
+    {
       left_texture.initWithImage(image);
  
       left_img = Sprite::createWithTexture(&left_texture);
       left_img->setPosition(Vec2((visibleSize.width/2)/2 + origin_.x - offset_x, (visibleSize.height/2 + origin_.y) - offset_y));
 
       this->addChild(left_img, 0);
-    } else {
+    } 
+    else 
+    {
       right_texture.initWithImage(image);
  
       right_img = Sprite::createWithTexture(&right_texture);
@@ -240,24 +260,28 @@ void single_play_scene::on_http_request_completed(HttpClient *sender, HttpRespon
       this->addChild(right_img, 0);
     }
 
-    if (image) {
+    if (image) 
+    {
       delete image;
     }
 
     ++download_count_;
-    if (download_count_ >= 2) {
+    if (download_count_ >= 2)
+    {
       //label_->setString("Loading Textures Done");
       start_game();   
     }
   }
-  else if (response->getHttpRequest()->getTag() == std::string("stage_info")) {
+  else if (response->getHttpRequest()->getTag() == std::string("stage_info"))
+  {
     CCLOG("2\n");
     CCLOG("http request complete for stage_info");
     char * concatenated = (char *) malloc(buffer->size() + 1);
     std::string _data(buffer->begin(), buffer->end());
     strcpy(concatenated, _data.c_str());
 
-    if(parsing_stage_info(std::move(_data))) {
+    if(parsing_stage_info(std::move(_data))) 
+    {
       CCLOG("stage_count: %d", stage_info_->current_stage_count);
       CCLOG("stage_count: %d", stage_info_->total_stage_count);
       CCLOG("spot size: %d", stage_info_->spots.size());
@@ -266,25 +290,30 @@ void single_play_scene::on_http_request_completed(HttpClient *sender, HttpRespon
       CCLOG("right img: %s", stage_info_->right_img.c_str());
     }
    
-  } else {
+  }
+  else
+  {
     CCLOG("http request complete but no tag");    
   }
 
   //http://legacy.tistory.com/88
 }
 
-bool single_play_scene::onTouchBegan(Touch* touch, Event* unused_event) {
+bool single_play_scene::onTouchBegan(Touch* touch, Event* unused_event)
+{
 
   if(!enable_input_) return true;
 
   Point location = touch->getLocation();
 
-  if(location.y > image_size_y) {
+  if(location.y > image_size_y)
+  {
     //CCLOG("ui 영역 입니다");
     return true;
   }
 
-  if(single_play_status_ != PLAYING) {
+  if(single_play_status_ != PLAYING) 
+  {
     //CCLOG("게임상태 아님");
     return true;
   }
@@ -312,7 +341,8 @@ void single_play_scene::update(float delta_time)
   CCLOG("aaa");
 }
 
-bool single_play_scene::parsing_stage_info(std::string&& payload) {
+bool single_play_scene::parsing_stage_info(std::string&& payload) 
+{
     using namespace json11;
     std::string err;
     auto res = Json::parse(payload, err);
@@ -356,7 +386,8 @@ bool single_play_scene::parsing_stage_info(std::string&& payload) {
     return true;
 }
 
-void single_play_scene::start_game() {
+void single_play_scene::start_game() 
+{
   single_play_status_ = SINGLE_PLAY_STATUS::PLAYING;
   curtain_left_img_->runAction(Sequence::create(Show::create(), FadeOut::create(2.0), nullptr));
   curtain_right_img_->runAction(Sequence::create(Show::create(), FadeOut::create(2.0), nullptr));
@@ -399,7 +430,8 @@ void single_play_scene::on_start_game(float dt)
   //this->schedule(SEL_SCHEDULE(&single_play_scene::on_update_timer), 1/10);
 }
 
-void single_play_scene::pause_game() {
+void single_play_scene::pause_game() 
+{
   single_play_status_ = SINGLE_PLAY_STATUS::PAUSE;
   curtain_left_img_->runAction(Sequence::create(Show::create(), FadeIn::create(1.0), nullptr));
   curtain_right_img_->runAction(Sequence::create(Show::create(), FadeIn::create(1.0), nullptr));
@@ -407,13 +439,15 @@ void single_play_scene::pause_game() {
   this->scheduleOnce(schedule_selector(single_play_scene::open_pause_menu), 1.0f);
 }
 
-void single_play_scene::resume_game() {
+void single_play_scene::resume_game()
+{
   single_play_status_ = SINGLE_PLAY_STATUS::PLAYING;
   curtain_left_img_->runAction(Sequence::create(Show::create(), FadeOut::create(2.0), nullptr));
   curtain_right_img_->runAction(Sequence::create(Show::create(), FadeOut::create(2.0), nullptr));
 }
 
-void single_play_scene::generate_rects() {
+void single_play_scene::generate_rects() 
+{
 
   spots_info_ = std::make_shared<spots_info>();
 
@@ -441,7 +475,8 @@ void single_play_scene::generate_rects() {
   }
 }
 
-bool single_play_scene::check_find_answer(const Point& point) {
+bool single_play_scene::check_find_answer(const Point& point) 
+{
 
   if(single_play_status_ != SINGLE_PLAY_STATUS::PLAYING) return false;
 
@@ -471,13 +506,15 @@ bool single_play_scene::check_find_answer(const Point& point) {
   return is_find;
 }
 
-void single_play_scene::correct_effect(int index) {
+void single_play_scene::correct_effect(int index) 
+{
   CCLOG("@@ correct answer @@");
   spots_info_->answer_container[index] = true;
   update_spot_info(spots_info_->answer_container.size());
 }
 
-void single_play_scene::incorrect_effect(Point point) {
+void single_play_scene::incorrect_effect(Point point) 
+{
   enable_input_ = false;
   CCLOG("XX incorrect answer XX");
   this->scheduleOnce(schedule_selector(single_play_scene::done_incorrect_effect), 0.8f);
@@ -520,7 +557,8 @@ void single_play_scene::incorrect_effect(Point point) {
   }
 }
 
-void single_play_scene::done_incorrect_effect(float dt) {
+void single_play_scene::done_incorrect_effect(float dt) 
+{
   enable_input_ = true; 
 }
 
@@ -612,7 +650,8 @@ void single_play_scene::create_pause() {
   resume_button->setBright(false);
 }
 
-void single_play_scene::create_timer() {
+void single_play_scene::create_timer() 
+{
    time_bar = Sprite::create("ui/time_bar.png");
 
   // 10초 동안 게이지 100% 동안 내려옴
@@ -642,7 +681,8 @@ void single_play_scene::create_timer() {
   this->addChild(progress_timebar_, 1);
 }
 
-void single_play_scene::on_update_timer(float dt) {
+void single_play_scene::on_update_timer(float dt) 
+{
 
   //CCLOG("percentage: %f", progress_timebar_->getPercentage());
 
@@ -659,7 +699,8 @@ void single_play_scene::on_update_timer(float dt) {
   progress_timebar_->setPercentage(percentage - (100 / (60 * timer_sec)));
 }
 
-void single_play_scene::draw_stage_info(int current_stage, int end_stage) {
+void single_play_scene::draw_stage_info(int current_stage, int end_stage)
+{
   auto stage_info_font = to_string2(current_stage) + "    " + to_string2(end_stage);
   auto label = Label::createWithSystemFont(stage_info_font.c_str(), "Ariel", 42);
   label->setColor(Color3B(255, 255, 255)); 
@@ -669,7 +710,8 @@ void single_play_scene::draw_stage_info(int current_stage, int end_stage) {
   this->addChild(label, 1);
 }
 
-void single_play_scene::update_spot_info(int total_spot_count) {
+void single_play_scene::update_spot_info(int total_spot_count) 
+{
   auto answer_count = 0;
   if(spots_info_) {
     for(const auto& answer : spots_info_->answer_container) {
@@ -688,7 +730,8 @@ void single_play_scene::update_spot_info(int total_spot_count) {
   draw_spot_info(answer_count, total_spot_count);
 }
 
-void single_play_scene::draw_spot_info(int found_spot_count, int total_spot_count) {
+void single_play_scene::draw_spot_info(int found_spot_count, int total_spot_count)
+{
   auto spot_info_font = to_string2(found_spot_count) + "    " + to_string2(total_spot_count);
   
   if(!spot_info_font_) {
@@ -703,18 +746,21 @@ void single_play_scene::draw_spot_info(int found_spot_count, int total_spot_coun
   spot_info_font_->setString(spot_info_font.c_str());
 }
 
-void single_play_scene::on_complete_stage(float dt) {
+void single_play_scene::on_complete_stage(float dt) 
+{
   CCLOG("on_complete_stage called\n");
   auto next_stage = stage_info_->current_stage_count + 1;
   save_user_info("current_stage", next_stage);
 }
 
-void single_play_scene::on_load_item_store() {
+void single_play_scene::on_load_item_store() 
+{
   auto item_store_scene = item_store_scene::createScene();
   Director::getInstance()->pushScene(item_store_scene);
 }
 
-void single_play_scene::open_pause_menu(float dt) {
+void single_play_scene::open_pause_menu(float dt) 
+{
 
   //is_allowing_input_ = false;
   
@@ -729,7 +775,8 @@ void single_play_scene::open_pause_menu(float dt) {
   
 }
 
-void single_play_scene::close_pause_menu(cocos2d::Ref* pSender) {
+void single_play_scene::close_pause_menu(cocos2d::Ref* pSender) 
+{
 
   if (!is_allowing_input_) {
     return;
@@ -749,16 +796,19 @@ void single_play_scene::close_pause_menu(cocos2d::Ref* pSender) {
   paused_navigation_menu_->setVisible(false);
 }
  
-void single_play_scene::on_unlock_pause_button(float dt) {
+void single_play_scene::on_unlock_pause_button(float dt) 
+{
   CCLOG("on unlock called");
   is_pause_button_ = true;
 }
 
-void single_play_scene::on_allowing_input(float dt) {
+void single_play_scene::on_allowing_input(float dt) 
+{
   if(!is_allowing_input_) is_allowing_input_ = true;
 }
 
-void single_play_scene::start_circle_animation(Vec2 pos) {
+void single_play_scene::start_circle_animation(Vec2 pos)
+{
  auto circle_animation = Animation::create();
   circle_animation->setDelayPerUnit(0.1f);
   circle_animation->addSpriteFrameWithFileName("animation/correct/circle0.png");
@@ -774,7 +824,8 @@ void single_play_scene::start_circle_animation(Vec2 pos) {
   this->addChild(correct_circle, 0);
 }
 
-void single_play_scene::game_over() {
+void single_play_scene::game_over() 
+{
   if(single_play_status_ == RESULT) return;
   single_play_status_ = RESULT;
 
@@ -800,7 +851,8 @@ void single_play_scene::game_over() {
   CCLOG("game over");
 }
 
-void single_play_scene::on_create_end_navigation_menu(float dt) {
+void single_play_scene::on_create_end_navigation_menu(float dt) 
+{
   
   auto item_1 = MenuItemFont::create("Restart", CC_CALLBACK_1(single_play_scene::retry_game, this));
   auto item_2 = MenuItemFont::create("Show Ranking" , CC_CALLBACK_1(single_play_scene::view_ranking, this));
