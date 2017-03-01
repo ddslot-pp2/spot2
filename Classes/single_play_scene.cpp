@@ -60,7 +60,7 @@ bool single_play_scene::init()
   auto get_uid = "sadsadasdasd";
 
   auto req_url = std::string(req_stage_info_url) + to_string2(current_stage);
-  http_request(req_url.c_str(), "stage_info");
+  http_request(req_url.c_str(), "stage-info");
   CCLOG("3\n");  
     
   auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -272,7 +272,7 @@ void single_play_scene::on_http_request_completed(HttpClient *sender, HttpRespon
       start_game();   
     }
   }
-  else if (response->getHttpRequest()->getTag() == std::string("stage_info"))
+  else if (response->getHttpRequest()->getTag() == std::string("stage-info"))
   {
     CCLOG("2\n");
     CCLOG("http request complete for stage_info");
@@ -365,7 +365,7 @@ bool single_play_scene::parsing_stage_info(std::string&& payload)
       //spots_.push_back(Rect(x,y))
     }
 
-    auto rects = res["spot_rects"].array_items();    
+    auto rects = res["rects"].array_items();    
     for(auto& d : rects) {
       auto x = d["x"].int_value();
       auto y = d["y"].int_value();
@@ -751,6 +751,9 @@ void single_play_scene::on_complete_stage(float dt)
   CCLOG("on_complete_stage called\n");
   auto next_stage = stage_info_->current_stage_count + 1;
   save_user_info("current_stage", next_stage);
+
+  // 처음에 시작했을때 비교해서 max_stage랑 같으면 기다려달라고 팝업
+  // 지금 이상태에서도 max_stage랑 같으면 기다려 달라고 팝업
 }
 
 void single_play_scene::on_load_item_store() 
