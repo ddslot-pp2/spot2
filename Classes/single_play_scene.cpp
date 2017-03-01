@@ -399,7 +399,7 @@ void single_play_scene::start_game()
   //this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_start_game), 1.0f);
   this->scheduleOnce(schedule_selector(single_play_scene::on_start_game), 1.0f);
 
-  auto ready = Sprite::create("ui/ready.png");
+  auto ready = Sprite::create("ui/ready2.png");
   ready->setPosition(Vec2(center_.x, center_.y + 50));
   this->addChild(ready, 2);
   ready->runAction(Sequence::create(Show::create(), FadeOut::create(1.0), nullptr));
@@ -815,6 +815,7 @@ void single_play_scene::start_circle_animation(Vec2 pos)
   circle_animation->addSpriteFrameWithFileName("animation/correct/circle1.png");
   circle_animation->addSpriteFrameWithFileName("animation/correct/circle2.png");
   circle_animation->addSpriteFrameWithFileName("animation/correct/circle3.png");
+  circle_animation->addSpriteFrameWithFileName("animation/correct/circle4.png");
 
   auto correct_circle = Sprite::create("animation/correct/circle0.png");
   correct_circle->setPosition(Vec2(pos.x, pos.y));
@@ -839,7 +840,7 @@ void single_play_scene::game_over()
   auto audio = SimpleAudioEngine::getInstance();
   audio->playEffect("sound/game_over.mp3");
 
-  auto game_over = Sprite::create("ui/game_over.png");
+  auto game_over = Sprite::create("ui/game_over_04.jpg");
 
   //incorrect->setScale(0.5f);
   game_over->setPosition(center_);

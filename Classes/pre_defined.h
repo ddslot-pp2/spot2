@@ -40,7 +40,7 @@ struct stage_info
   float play_time;
 };
 
-static std::string tmp_uuid = "51F30A87BBFA128FE915C92391D2F164";
+std::string tmp_uuid = "51F30A87BBFA128FE915C92391D2F164";
 // readPhoneState 퍼미션이 설정되어있을 경우
 // ex) 51F30A87 - BBFA - 128F - E915 - C92391D2F164
 // readPhoneState 퍼미션이 설정되지 않을 경우
