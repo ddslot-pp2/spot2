@@ -60,7 +60,7 @@ bool single_play_scene::init()
   auto get_uid = "sadsadasdasd";
 
   auto req_url = std::string(req_stage_info_url) + to_string2(current_stage);
-  http_request(req_url.c_str(), "stage_info");
+  http_request(req_url.c_str(), "stage-info");
   CCLOG("3\n");  
     
   auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -272,7 +272,7 @@ void single_play_scene::on_http_request_completed(HttpClient *sender, HttpRespon
       start_game();   
     }
   }
-  else if (response->getHttpRequest()->getTag() == std::string("stage_info"))
+  else if (response->getHttpRequest()->getTag() == std::string("stage-info"))
   {
     CCLOG("2\n");
     CCLOG("http request complete for stage_info");
@@ -365,7 +365,7 @@ bool single_play_scene::parsing_stage_info(std::string&& payload)
       //spots_.push_back(Rect(x,y))
     }
 
-    auto rects = res["spot_rects"].array_items();    
+    auto rects = res["rects"].array_items();    
     for(auto& d : rects) {
       auto x = d["x"].int_value();
       auto y = d["y"].int_value();
@@ -399,7 +399,7 @@ void single_play_scene::start_game()
   //this->scheduleOnce(SEL_SCHEDULE(&single_play_scene::on_start_game), 1.0f);
   this->scheduleOnce(schedule_selector(single_play_scene::on_start_game), 1.0f);
 
-  auto ready = Sprite::create("ui/ready2.png");
+  auto ready = Sprite::create("ui/ready.png");
   ready->setPosition(Vec2(center_.x, center_.y + 50));
   this->addChild(ready, 2);
   ready->runAction(Sequence::create(Show::create(), FadeOut::create(1.0), nullptr));
@@ -563,7 +563,7 @@ void single_play_scene::done_incorrect_effect(float dt)
 }
 
 void single_play_scene::create_pause() {
-  pause_button = Button::create("ui/pause.png", "ui/pause_press.png", "ui/paly.png");
+  pause_button = Button::create("ui/pause.png", "ui/pause_press.png", "ui/play.png");
   //button->setTitleText("pause_button");
   pause_button->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type){
       switch (type)
@@ -606,7 +606,7 @@ void single_play_scene::create_pause() {
   pause_button->setPosition(pause_position);
   this->addChild(pause_button, 2);
 
-  resume_button = Button::create("ui/paly.png", "ui/paly.png", "ui/pause.png");
+  resume_button = Button::create("ui/play.png", "ui/play_press.png", "ui/pause.png");
   //button->setTitleText("pause_button");
   resume_button->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type) {
       switch (type)
@@ -751,6 +751,9 @@ void single_play_scene::on_complete_stage(float dt)
   CCLOG("on_complete_stage called\n");
   auto next_stage = stage_info_->current_stage_count + 1;
   save_user_info("current_stage", next_stage);
+  
+  // 처음에 시작했을때 비교해서 max_stage랑 같으면 기다려달라고 팝업
+  // 지금 이상태에서도 max_stage랑 같으면 기다려 달라고 팝업
 }
 
 void single_play_scene::on_load_item_store() 
@@ -764,9 +767,9 @@ void single_play_scene::open_pause_menu(float dt)
 
   //is_allowing_input_ = false;
   
-  auto item_1 = MenuItemFont::create("Resume" , CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
-  auto item_2 = MenuItemFont::create("Show Ranking" , CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
-  auto item_3 = MenuItemFont::create("Exit" , CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
+  auto item_1 = MenuItemImage::create("ui/menu_restart.png", "ui/menu_restart_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::retry_game, this));
+  auto item_2 = MenuItemImage::create("ui/menu_show_ranking.png", "ui/menu_show_ranking_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::view_ranking, this));
+  auto item_3 = MenuItemImage::create("ui/menu_exit.png", "ui/menu_exit_press.png", "ui/menu_exit_press.png", CC_CALLBACK_1(single_play_scene::end_game, this));
      
   paused_navigation_menu_ = Menu::create(item_1, item_2, item_3, NULL);
   paused_navigation_menu_->alignItemsVerticallyWithPadding(30);
@@ -815,7 +818,6 @@ void single_play_scene::start_circle_animation(Vec2 pos)
   circle_animation->addSpriteFrameWithFileName("animation/correct/circle1.png");
   circle_animation->addSpriteFrameWithFileName("animation/correct/circle2.png");
   circle_animation->addSpriteFrameWithFileName("animation/correct/circle3.png");
-  circle_animation->addSpriteFrameWithFileName("animation/correct/circle4.png");
 
   auto correct_circle = Sprite::create("animation/correct/circle0.png");
   correct_circle->setPosition(Vec2(pos.x, pos.y));
@@ -840,7 +842,7 @@ void single_play_scene::game_over()
   auto audio = SimpleAudioEngine::getInstance();
   audio->playEffect("sound/game_over.mp3");
 
-  auto game_over = Sprite::create("ui/game_over_04.jpg");
+  auto game_over = Sprite::create("ui/game_over.png");
 
   //incorrect->setScale(0.5f);
   game_over->setPosition(center_);
@@ -853,10 +855,9 @@ void single_play_scene::game_over()
 
 void single_play_scene::on_create_end_navigation_menu(float dt) 
 {
-  
-  auto item_1 = MenuItemFont::create("Restart", CC_CALLBACK_1(single_play_scene::retry_game, this));
-  auto item_2 = MenuItemFont::create("Show Ranking" , CC_CALLBACK_1(single_play_scene::view_ranking, this));
-  auto item_3 = MenuItemFont::create("Exit", CC_CALLBACK_1(single_play_scene::end_game, this));
+  auto item_1 = MenuItemImage::create("ui/menu_restart.png", "ui/menu_restart_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::retry_game, this));
+  auto item_2 = MenuItemImage::create("ui/menu_show_ranking.png", "ui/menu_show_ranking_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::view_ranking, this));
+  auto item_3 = MenuItemImage::create("ui/menu_exit.png", "ui/menu_exit_press.png", "ui/menu_exit_press.png", CC_CALLBACK_1(single_play_scene::end_game, this));
   
   auto end_navigation_menu_ = Menu::create(item_1, item_2, item_3, NULL);
   end_navigation_menu_->alignItemsVerticallyWithPadding(30);
