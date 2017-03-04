@@ -767,8 +767,8 @@ void single_play_scene::open_pause_menu(float dt)
 
   //is_allowing_input_ = false;
   
-  auto item_1 = MenuItemImage::create("ui/menu_restart.png", "ui/menu_restart_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::retry_game, this));
-  auto item_2 = MenuItemImage::create("ui/menu_show_ranking.png", "ui/menu_show_ranking_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::view_ranking, this));
+  auto item_1 = MenuItemImage::create("ui/menu_show_ranking.png", "ui/menu_show_ranking_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
+  auto item_2 = MenuItemImage::create("ui/menu_restart.png", "ui/menu_restart_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::retry_game, this));
   auto item_3 = MenuItemImage::create("ui/menu_exit.png", "ui/menu_exit_press.png", "ui/menu_exit_press.png", CC_CALLBACK_1(single_play_scene::end_game, this));
      
   paused_navigation_menu_ = Menu::create(item_1, item_2, item_3, NULL);
@@ -856,10 +856,11 @@ void single_play_scene::game_over()
 void single_play_scene::on_create_end_navigation_menu(float dt) 
 {
   auto item_1 = MenuItemImage::create("ui/menu_restart.png", "ui/menu_restart_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::retry_game, this));
-  auto item_2 = MenuItemImage::create("ui/menu_show_ranking.png", "ui/menu_show_ranking_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::view_ranking, this));
+  //auto item_2 = MenuItemImage::create("ui/menu_show_ranking.png", "ui/menu_show_ranking_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::view_ranking, this));
   auto item_3 = MenuItemImage::create("ui/menu_exit.png", "ui/menu_exit_press.png", "ui/menu_exit_press.png", CC_CALLBACK_1(single_play_scene::end_game, this));
   
-  auto end_navigation_menu_ = Menu::create(item_1, item_2, item_3, NULL);
+  //auto end_navigation_menu_ = Menu::create(item_1, item_2, item_3, NULL);
+  auto end_navigation_menu_ = Menu::create(item_1, item_3, NULL);
   end_navigation_menu_->alignItemsVerticallyWithPadding(30);
   this->addChild(end_navigation_menu_, 2);
   

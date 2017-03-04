@@ -76,7 +76,6 @@ bool HelloWorld::init()
     return true;
 }
 
-
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
