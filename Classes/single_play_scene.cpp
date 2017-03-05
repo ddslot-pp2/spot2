@@ -782,7 +782,7 @@ void single_play_scene::open_pause_menu(float dt)
 {
 
     //is_allowing_input_ = false;
-    auto item_1 = MenuItemImage::create("ui/menu_show_ranking.png", "ui/menu_show_ranking_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
+    auto item_1 = MenuItemImage::create("ui/menu_resume.png", "ui/menu_resume_press.png", "ui/menu_resume_press.png", CC_CALLBACK_1(single_play_scene::close_pause_menu, this));
     auto item_2 = MenuItemImage::create("ui/menu_restart.png", "ui/menu_restart_press.png", "ui/menu_restart_press.png", CC_CALLBACK_1(single_play_scene::retry_game, this));
     auto item_3 = MenuItemImage::create("ui/menu_exit.png", "ui/menu_exit_press.png", "ui/menu_exit_press.png", CC_CALLBACK_1(single_play_scene::end_game, this));
 
@@ -937,7 +937,7 @@ void single_play_scene::create_complete_popup()
     complete_confirm_button->setTouchEnabled(true);
     complete_confirm_button->ignoreContentAdaptWithSize(false);
     complete_confirm_button->setContentSize(Size(286.0f, 126.0f));
-    complete_confirm_button->loadTextures("ui/confirm_button.png", "ui/confirm_button.png");
+    complete_confirm_button->loadTextures("ui/confirm_button.png", "ui/confirm_button_press.png");
     complete_confirm_button->setPosition(Vec2(center_.x + offset, center_.y - 100.0f));
 
     complete_confirm_button->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type) {
