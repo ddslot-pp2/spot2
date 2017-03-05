@@ -100,12 +100,18 @@ public:
     void on_allowing_input(float dt);
 
     void game_over();
+    void complete_stage();
+
+    void create_complete_popup();
 
  private:
     void start_circle_animation(Vec2 pos);
     void on_unlock_pause_button(float dt);
 
     void on_create_end_navigation_menu(float dt);
+
+    void end_application();
+    void on_next_stage(float dt);
 
     Texture2D left_texture;
     Texture2D right_texture;
@@ -140,6 +146,9 @@ public:
 
     bool is_allowing_input_ = true;
 
+    Sprite* complete_background_popup;
+    Label* complete_noti_font = nullptr;
+    Button* complete_confirm_button = nullptr;
     //decltype(MenuItemFont) item_1;
 };
 

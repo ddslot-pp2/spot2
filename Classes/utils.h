@@ -46,4 +46,3 @@ std::string get_user_info<std::string>(const std::string& key);
 void reset_user_info();
 
 #endif
-
