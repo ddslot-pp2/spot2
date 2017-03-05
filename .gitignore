@@ -107,3 +107,4 @@ proj.win32/Release.*/
 cocos2d/
 *.VC.db
 *.suo
+/linux-build

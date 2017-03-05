@@ -927,7 +927,8 @@ void single_play_scene::create_complete_popup()
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
     complete_noti_font = Label::createWithTTF(" This is last stage.\n Thank you for playing.", "fonts/Marker Felt.ttf", 40);
 #else
-    complete_noti_font = Label::createWithTTF("   마지막 스테이지 입니다. \n 빠른 업데이트 하겠습니다.", "fonts/nanumb.ttf", 40);
+    complete_noti_font = Label::createWithTTF("   마지막 스테이지 입니다. \n 빠른 업데이트 하겠습니다.", "fonts/BMYEONSUNG_ttf.ttf", 40);
+    // http://www.freekoreanfont.com/
 #endif
     complete_noti_font->setPosition(Vec2(center_.x + offset, center_.y + 50));
     complete_noti_font->setColor(Color3B(110, 110, 110));

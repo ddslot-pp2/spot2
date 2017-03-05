@@ -130,12 +130,21 @@ endif( WIN32 )
 set(GAME_SRC
   Classes/AppDelegate.cpp
   Classes/HelloWorldScene.cpp
+  Classes/json11.cpp
+  Classes/utils.cpp
+  Classes/single_play_scene.cpp
+  Classes/item_store_scene.cpp
   ${PLATFORM_SPECIFIC_SRC}
 )
 
 set(GAME_HEADERS
   Classes/AppDelegate.h
   Classes/HelloWorldScene.h
+  Classes/pre_defined.h
+  Classes/json11.h
+  Classes/utils.h
+  Classes/single_play_scene.h
+  Classes/item_store_scene.h
   ${PLATFORM_SPECIFIC_HEADERS}
 )
 
