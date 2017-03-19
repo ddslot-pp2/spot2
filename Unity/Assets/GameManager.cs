@@ -46,6 +46,9 @@ public class GameManager : MonoBehaviour {
 
 	public Image pauseButtonImage;
 
+	public float incorrectTimePenalty = 5f;
+	public float correctTimePlus = 5f;
+
 	public static GameManager Ins;
 
 	/// <summary>
@@ -89,7 +92,7 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-		if (GetCurrentStageTotalTime() > 0 && !isStageOver)
+		if (GetCurrentStageTotalTime() > 0 && !isStageOver && !pauseMenuPanel.gameObject.activeSelf)
 		{
         	stagePlayTime += Time.deltaTime;
 
@@ -140,27 +143,45 @@ public class GameManager : MonoBehaviour {
 	{
 		for(int i=0; i<spots.Length; i++)
 		{
-			AnswerButton btnObj = GameObject.Instantiate(answerButtonPrefab).GetComponent<AnswerButton>();
+			AnswerButton btnObj;
+			if (leftAnswerButtonList.Count == 0 || i > leftAnswerButtonList.Count-1  || leftAnswerButtonList[i] == null)
+			{
+				btnObj = GameObject.Instantiate(answerButtonPrefab).GetComponent<AnswerButton>();
+				leftAnswerButtonList.Add(btnObj);
+			}
+			else
+			{
+				btnObj = leftAnswerButtonList[i];
+			}
 			btnObj.transform.SetParent(canvasTrans);
 			btnObj.transform.localScale = Vector3.one;
 			btnObj.GetComponent<RectTransform>().sizeDelta = new Vector2(rects[i].x, rects[i].y);
 			btnObj.GetComponent<RectTransform>().anchoredPosition = new Vector3(spots[i].x, spots[i].y, 0f);
 			btnObj.GetComponent<Button>().onClick.AddListener(() => btnObj.ButtonClicked());
 			btnObj.index = i;
-			leftAnswerButtonList.Add(btnObj);
 		}
 
 		for(int i=0; i<spots.Length; i++)
 		{
-			AnswerButton btnObj = GameObject.Instantiate(answerButtonPrefab).GetComponent<AnswerButton>();
+			AnswerButton btnObj;
+			if (rightAnswerButtonList.Count == 0 || i > rightAnswerButtonList.Count-1 || rightAnswerButtonList[i] == null)
+			{
+				btnObj = GameObject.Instantiate(answerButtonPrefab).GetComponent<AnswerButton>();
+				rightAnswerButtonList.Add(btnObj);
+			}
+			else
+			{
+				btnObj = rightAnswerButtonList[i];
+			}
 			btnObj.transform.SetParent(canvasTrans);
 			btnObj.transform.localScale = Vector3.one;
 			btnObj.GetComponent<RectTransform>().sizeDelta = new Vector2(rects[i].x, rects[i].y);
 			btnObj.GetComponent<RectTransform>().anchoredPosition = new Vector3(spots[i].x + leftImageOffset, spots[i].y, 0f);
 			btnObj.GetComponent<Button>().onClick.AddListener(() => btnObj.ButtonClicked());
 			btnObj.index = i;
-			rightAnswerButtonList.Add(btnObj);
 		}
+
+		EnableAnswerButtons();
 	}
 
 	public void SetDiffCountInfos()
@@ -191,6 +212,8 @@ public class GameManager : MonoBehaviour {
 
 		answerFindCount++;
 
+		stagePlayTime -= correctTimePlus;
+
 		SetDiffCountInfos();
 
 		Invoke("CheckMoveToNextStage", 1f);
@@ -198,6 +221,8 @@ public class GameManager : MonoBehaviour {
 
 	public void InCorrectPoinClicked()
 	{
+		//잘못된 곳을 클릭했을 때 남은 시간을 감소시킨다
+		stagePlayTime += incorrectTimePenalty;
 		inCorrectAnswerImage.rectTransform.anchoredPosition = Input.mousePosition;
 		inCorrectAnswerImage.gameObject.SetActive(true);
 
@@ -241,8 +266,7 @@ public class GameManager : MonoBehaviour {
 
 	void ClearAndMoveToNextStage()
 	{
-		leftAnswerButtonList.Clear();
-		rightAnswerButtonList.Clear();
+		DisableAnswerButtons();
 		currentStageTotalTime = 0;
 		stagePlayTime = -1f;
 		isStageOver = false;
@@ -262,10 +286,9 @@ public class GameManager : MonoBehaviour {
 
 	public void RestartGame()
 	{
+		DisableAnswerButtons();
 		pauseMenuPanel.gameObject.SetActive(false);
 		isShownPauseMenu = false;
-		leftAnswerButtonList.Clear();
-		rightAnswerButtonList.Clear();
 		currentStageTotalTime = 0;
 		stagePlayTime = -1f;
 		isStageOver = false;
@@ -282,5 +305,25 @@ public class GameManager : MonoBehaviour {
 	public void ExitGame()
 	{
 		Application.Quit();
+	}
+
+	public void DisableAnswerButtons()
+	{
+		for(int i=0; i<leftAnswerButtonList.Count; i++)
+		{
+			leftAnswerButtonList[i].circleAnimObject.SetActive(false);
+			rightAnswerButtonList[i].circleAnimObject.SetActive(false);
+		}
+	}
+	public void EnableAnswerButtons()
+	{
+		for(int i=0; i<leftAnswerButtonList.Count; i++)
+		{
+			leftAnswerButtonList[i].gameObject.SetActive(true);
+			rightAnswerButtonList[i].gameObject.SetActive(true);
+
+			leftAnswerButtonList[i].GetComponent<Image>().raycastTarget = true;
+			rightAnswerButtonList[i].GetComponent<Image>().raycastTarget = true;
+		}
 	}
 }
