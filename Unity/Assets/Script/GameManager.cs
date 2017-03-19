@@ -147,18 +147,18 @@ public class GameManager : MonoBehaviour {
 			if (leftAnswerButtonList.Count == 0 || i > leftAnswerButtonList.Count-1  || leftAnswerButtonList[i] == null)
 			{
 				btnObj = GameObject.Instantiate(answerButtonPrefab).GetComponent<AnswerButton>();
+				btnObj.transform.SetParent(canvasTrans);
+				btnObj.transform.localScale = Vector3.one;
+				btnObj.GetComponent<Button>().onClick.AddListener(() => btnObj.ButtonClicked());
+				btnObj.index = i;
 				leftAnswerButtonList.Add(btnObj);
 			}
 			else
 			{
 				btnObj = leftAnswerButtonList[i];
 			}
-			btnObj.transform.SetParent(canvasTrans);
-			btnObj.transform.localScale = Vector3.one;
 			btnObj.GetComponent<RectTransform>().sizeDelta = new Vector2(rects[i].x, rects[i].y);
 			btnObj.GetComponent<RectTransform>().anchoredPosition = new Vector3(spots[i].x, spots[i].y, 0f);
-			btnObj.GetComponent<Button>().onClick.AddListener(() => btnObj.ButtonClicked());
-			btnObj.index = i;
 		}
 
 		for(int i=0; i<spots.Length; i++)
@@ -167,18 +167,18 @@ public class GameManager : MonoBehaviour {
 			if (rightAnswerButtonList.Count == 0 || i > rightAnswerButtonList.Count-1 || rightAnswerButtonList[i] == null)
 			{
 				btnObj = GameObject.Instantiate(answerButtonPrefab).GetComponent<AnswerButton>();
+				btnObj.transform.SetParent(canvasTrans);
+				btnObj.transform.localScale = Vector3.one;
+				btnObj.GetComponent<Button>().onClick.AddListener(() => btnObj.ButtonClicked());
+				btnObj.index = i;
 				rightAnswerButtonList.Add(btnObj);
 			}
 			else
 			{
 				btnObj = rightAnswerButtonList[i];
 			}
-			btnObj.transform.SetParent(canvasTrans);
-			btnObj.transform.localScale = Vector3.one;
 			btnObj.GetComponent<RectTransform>().sizeDelta = new Vector2(rects[i].x, rects[i].y);
 			btnObj.GetComponent<RectTransform>().anchoredPosition = new Vector3(spots[i].x + leftImageOffset, spots[i].y, 0f);
-			btnObj.GetComponent<Button>().onClick.AddListener(() => btnObj.ButtonClicked());
-			btnObj.index = i;
 		}
 
 		EnableAnswerButtons();
@@ -213,10 +213,14 @@ public class GameManager : MonoBehaviour {
 		answerFindCount++;
 
 		stagePlayTime -= correctTimePlus;
+		if (stagePlayTime >= GetCurrentStageTotalTime())
+		{
+			stagePlayTime = GetCurrentStageTotalTime();
+		}
 
 		SetDiffCountInfos();
 
-		Invoke("CheckMoveToNextStage", 1f);
+		Invoke("CheckMoveToNextStage", 2f);
 	}
 
 	public void InCorrectPoinClicked()
