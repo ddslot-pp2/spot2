@@ -108,3 +108,10 @@ cocos2d/
 *.VC.db
 *.suo
 /linux-build
+
+/Unity/Library
+/Unity/Temp
+/Unity/*.sln
+/Unity/.vscode
+/Unity/obj
+/Unity/*.csproj
