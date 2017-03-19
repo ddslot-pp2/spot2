@@ -14,8 +14,6 @@ public class GameManager : MonoBehaviour {
 	
 	public Text currentStageCount;
 	public Text currentFindDiffCount;
-	public Text maxStageCount;
-	public Text maxFindDiffCount;
 	
 	private float stagePlayTime = -1f;
 
@@ -52,6 +50,11 @@ public class GameManager : MonoBehaviour {
 	public float incorrectTimePenalty = 5f;
 	public float correctTimePlus = 5f;
 	
+	public int currentStageIndex = 0;
+
+	public Text HintItemCount;
+	public Text AddTimeItemCount;
+
 	public static GameManager Ins;
 
 	/// <summary>
@@ -201,14 +204,13 @@ public class GameManager : MonoBehaviour {
 
 	public void SetDiffCountInfos()
 	{
-		currentFindDiffCount.text = answerFindCount.ToString();
-		maxFindDiffCount.text = leftAnswerButtonList.Count.ToString();
+		currentFindDiffCount.text = string.Format("{0}/{1}", answerFindCount.ToString(), leftAnswerButtonList.Count.ToString());
 	}
 
 	public void SetStageInfos(int curCount, int maxCount)
 	{
-		currentStageCount.text = curCount.ToString();
-		maxStageCount.text = maxCount.ToString();
+		currentStageIndex = curCount;
+		currentStageCount.text = string.Format("{0}/{1}", curCount.ToString(), maxCount.ToString());
 	}
 
 	public void AnswerButtonClicked(int index)
@@ -228,9 +230,9 @@ public class GameManager : MonoBehaviour {
 		answerFindCount++;
 
 		stagePlayTime -= correctTimePlus;
-		if (stagePlayTime >= GetCurrentStageTotalTime())
+		if (stagePlayTime < 0)
 		{
-			stagePlayTime = GetCurrentStageTotalTime();
+			stagePlayTime = 0;
 		}
 
 		SetDiffCountInfos();
@@ -294,7 +296,7 @@ public class GameManager : MonoBehaviour {
 		currentFindDiffCount.text = "0";
 		answerFindCount = 0;
 
-		NetworkManager.Ins.GetStageInfoFromServer(int.Parse(currentStageCount.text)+1);
+		NetworkManager.Ins.GetStageInfoFromServer(currentStageIndex+1);
 	}
 
 	public void ResumeGame()
@@ -345,5 +347,15 @@ public class GameManager : MonoBehaviour {
 			leftAnswerButtonList[i].GetComponent<Image>().raycastTarget = true;
 			rightAnswerButtonList[i].GetComponent<Image>().raycastTarget = true;
 		}
+	}
+
+	public void ClickedHintButton()
+	{
+
+	}
+
+	public void ClickedAddTimeButton()
+	{
+
 	}
 }

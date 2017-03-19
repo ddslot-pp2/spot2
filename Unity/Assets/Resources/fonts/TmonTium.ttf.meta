@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: fd4d8b35b3da84f32844ab0b79e5515d
+timeCreated: 1489930675
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Tium
+  fontNames:
+  - Tium
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
