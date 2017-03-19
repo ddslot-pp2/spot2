@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour {
 
 	public float incorrectTimePenalty = 5f;
 	public float correctTimePlus = 5f;
-
+	
 	public static GameManager Ins;
 
 	/// <summary>
@@ -244,7 +244,8 @@ public class GameManager : MonoBehaviour {
 		stagePlayTime += incorrectTimePenalty;
 		inCorrectAnswerImage.rectTransform.anchoredPosition = Input.mousePosition;
 		inCorrectAnswerImage.gameObject.SetActive(true);
-
+		
+		Camera.main.GetComponent<CameraShake>().shakeDuration = 0.5f;
 		Invoke("HideInCorrectPointImage", 0.5f);
 	}
 
