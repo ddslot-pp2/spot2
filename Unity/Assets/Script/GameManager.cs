@@ -22,6 +22,9 @@ public class GameManager : MonoBehaviour {
 	public GameObject pauseMenuPanel;
 	private bool isShownPauseMenu = false;
 
+	public GameObject pauseButton;
+	public GameObject startButton;
+
 	public GameObject answerButtonPrefab;
 	public List<AnswerButton> leftAnswerButtonList = new List<AnswerButton>();
 	public List<AnswerButton> rightAnswerButtonList = new List<AnswerButton>();
@@ -116,16 +119,28 @@ public class GameManager : MonoBehaviour {
 		if (!isShownPauseMenu)
 		{
 			isShownPauseMenu = true;
+			pauseButton.SetActive(false);
+			startButton.SetActive(true);
 		}
 		else
 		{
 			isShownPauseMenu = false;
+			pauseButton.SetActive(true);
+			startButton.SetActive(false);
 		}
 		pauseMenuPanel.SetActive(isShownPauseMenu);
 	}
 
-	public void ChangePauseButtonImage()
+	public void ChangePauseMenuButton()
 	{
+		if (!isShownPauseMenu)
+		{
+			
+		}	
+		else
+		{
+			
+		}
 	}
 
 	public void SetStageImage(Texture2D[] tex)
