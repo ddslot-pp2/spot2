@@ -105,10 +105,12 @@ public class GameManager : MonoBehaviour {
         	TimeProgressBar.fillAmount = (GetCurrentStageTotalTime() - stagePlayTime) / GetCurrentStageTotalTime();
 		}
 
-		if (stagePlayTime >= GetCurrentStageTotalTime())
+		if (stagePlayTime >= GetCurrentStageTotalTime() && !isStageOver)
 		{
 			isStageOver = true;
 			gameoverImg.gameObject.SetActive(true);
+
+			Invoke("ShowPauseMenu", 1.5f);
 		}
     }
 
@@ -119,6 +121,11 @@ public class GameManager : MonoBehaviour {
 
     public void ShowPauseMenu()
 	{
+		if (isStageOver)
+		{
+			pauseMenuPanel.transform.Find("Resume").gameObject.SetActive(false);
+		}
+
 		if (!isShownPauseMenu)
 		{
 			isShownPauseMenu = true;
@@ -318,6 +325,8 @@ public class GameManager : MonoBehaviour {
 		currentFindDiffCount.text = "0";
 		answerFindCount = 0;
 
+		gameoverImg.gameObject.SetActive(false);
+
 		CurtainLeft.CrossFadeAlpha(1f, 1f, false);
 		CurtainRight.CrossFadeAlpha(1f, 1f, false);
 
@@ -335,6 +344,8 @@ public class GameManager : MonoBehaviour {
 		{
 			leftAnswerButtonList[i].circleAnimObject.SetActive(false);
 			rightAnswerButtonList[i].circleAnimObject.SetActive(false);
+			leftAnswerButtonList[i].hintAnimObject.SetActive(false);
+			rightAnswerButtonList[i].hintAnimObject.SetActive(false);
 		}
 	}
 	public void EnableAnswerButtons()
@@ -351,11 +362,43 @@ public class GameManager : MonoBehaviour {
 
 	public void ClickedHintButton()
 	{
+		AnswerButton btn = GetNextAnswerButton();
+		//아이템 갯수 갱신
+		if (btn != null)
+		{
+			StartCoroutine(Co_ShowAndHideHint(btn.hintAnimObject));
+		}
+	}
 
+	IEnumerator Co_ShowAndHideHint(GameObject obj)
+	{
+		obj.SetActive(true);
+
+		yield return new WaitForSeconds(2f);
+
+		obj.SetActive(false);
 	}
 
 	public void ClickedAddTimeButton()
 	{
+		//아이템 갯수 갱신
+		stagePlayTime -= 2.0f;
+		if (stagePlayTime < 0f)
+		{
+			stagePlayTime = 0f;
+		}
+	}
 
+	public AnswerButton GetNextAnswerButton()
+	{
+		for(int i=0; i<leftAnswerButtonList.Count; i++)
+		{
+			if (!leftAnswerButtonList[i].circleAnimObject.activeSelf)
+			{
+				return leftAnswerButtonList[i];
+			}
+		}
+
+		return null;
 	}
 }
