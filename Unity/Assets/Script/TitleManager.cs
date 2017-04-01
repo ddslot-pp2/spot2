@@ -20,5 +20,10 @@ public class TitleManager : MonoBehaviour {
 		SceneManager.LoadScene("Main");
 	}
 
+    public void OnClickedShoptItemButton()
+    {
+        SceneManager.LoadScene("ShopItem");
+    }
+
 
 }
