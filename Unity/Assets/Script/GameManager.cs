@@ -55,6 +55,9 @@ public class GameManager : MonoBehaviour {
 	public Text HintItemCount;
 	public Text AddTimeItemCount;
 
+	public int selectedLevelTotalStageCount = 0;
+	public int[] selectedLevelStageList;
+
 	public static GameManager Ins;
 
 	/// <summary>
@@ -63,14 +66,11 @@ public class GameManager : MonoBehaviour {
 	void Awake()
 	{
 		Ins = this;
+		DontDestroyOnLoad(gameObject);
 	}
 
 	// Use this for initialization
 	void Start () {
-		//CurtainLeft.CrossFadeAlpha(0f, 1f, false);
-		//CurtainRight.CrossFadeAlpha(0f, 1f, false);
-
-		//StartCoroutine("Co_StartStage");
 	}
 
 	public void StartStage()

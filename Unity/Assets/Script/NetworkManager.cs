@@ -31,6 +31,30 @@ public class StageInfo
 	public bool is_max_stage;
 }
 
+[Serializable]
+public class TotalLevelInfo
+{
+	public bool result;
+	public int total_stage_count;
+	public string level;
+}
+
+public class LevelInfo
+{
+	public bool result;
+	public string level;
+	public int[] stage_count;
+	public int size;
+}
+
+public enum LEVEL
+{
+	EASY = 0,
+	NORMAL,
+	HARD,
+	HELL
+}
+
 public class NetworkManager : MonoBehaviour {
 	public static NetworkManager Ins;
 
@@ -106,6 +130,46 @@ public class NetworkManager : MonoBehaviour {
 			GameManager.Ins.currentStageTotalTime = info.play_time-1;
 
 			GameManager.Ins.StartStage();
+		}
+	}
+
+	int levelStageStartIndex = 1;
+	int levelStageEndIndex = 0;
+	public void GetLevelStageList(LEVEL level)
+	{
+		StartCoroutine("Co_GetLevelStageList", level);
+	}
+
+	IEnumerator Co_GetLevelStageList(LEVEL level)
+	{
+		WWW www = new WWW("http://t.05day.com/stage-info/total-stage/" + (int)level);
+
+		yield return www;
+
+		TotalLevelInfo totalInfo = JsonUtility.FromJson<TotalLevelInfo>(www.text);
+
+		if (totalInfo.result)
+		{
+			GameManager.Ins.selectedLevelTotalStageCount = totalInfo.total_stage_count;
+			
+			string url;
+			if (GameManager.Ins.selectedLevelTotalStageCount < 10)
+			{
+				url = "http://t.05day.com/stage-info/level/" + (int)level + "/1/" + GameManager.Ins.selectedLevelTotalStageCount;
+			}
+			else
+			{
+				levelStageEndIndex += 10;
+				url = "http://t.05day.com/stage-info/level/" + (int)level + "/" + levelStageStartIndex + "/" + levelStageEndIndex;
+			}
+
+			WWW www2 = new WWW(url);
+
+			yield return www2;
+
+			LevelInfo levelInfo = JsonUtility.FromJson<LevelInfo>(www2.text);
+
+			
 		}
 	}
 }
