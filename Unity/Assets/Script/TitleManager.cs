@@ -4,9 +4,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class TitleManager : MonoBehaviour {
 	public GameObject shopPanel;
 	public GameObject levelSelectPanel;
+=======
+public class TitleManager : MonoBehaviour
+{
+>>>>>>> origin/master
 =======
 public class TitleManager : MonoBehaviour
 {
@@ -30,11 +35,14 @@ public class TitleManager : MonoBehaviour
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public void OnclickedShopButton()
 	{
 		shopPanel.SetActive(true);
 	}
 =======
+=======
+>>>>>>> origin/master
     public void OnClickedShoptItemButton()
     {
         SceneManager.LoadScene("ShopItem");
@@ -58,6 +66,7 @@ public class TitleManager : MonoBehaviour
 
         }
     }
+<<<<<<< HEAD
 >>>>>>> origin/master
 
 	public void OnSelectedEasyLevel()
@@ -74,6 +83,8 @@ public class TitleManager : MonoBehaviour
 	{
 		
 	}
+=======
+>>>>>>> origin/master
 
 	public void OnSelectedHellLevel()
 	{

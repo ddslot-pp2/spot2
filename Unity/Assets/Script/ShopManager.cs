@@ -4,8 +4,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class ShopManager : MonoBehaviour {
 	public ShopItem[] itemList;
+=======
+public class ShopManager : MonoBehaviour
+{
+>>>>>>> origin/master
 =======
 public class ShopManager : MonoBehaviour
 {
@@ -23,6 +28,7 @@ public class ShopManager : MonoBehaviour
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public void UpdateItemsInfo()
 	{
 
@@ -33,6 +39,8 @@ public class ShopManager : MonoBehaviour
 		gameObject.SetActive(false);
 	}
 =======
+=======
+>>>>>>> origin/master
     void request_item_info()
     {
 
@@ -62,5 +70,8 @@ public class ShopManager : MonoBehaviour
     {
         Debug.Log("타이머 증가 50개 추가 버튼 클릭");
     }
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 }
