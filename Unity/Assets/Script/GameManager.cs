@@ -71,11 +71,16 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		Debug.Log(NetworkManager.Ins.currentStageIndex);
+		currentStageIndex = NetworkManager.Ins.currentStageIndex;
+		NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex-1]);
 	}
 
 	public void StartStage()
 	{
 		StartCoroutine("Co_StartStage");
+
+		NetworkManager.Ins.SendStartStageInfo();
 	}
 
 	IEnumerator Co_StartStage()
@@ -216,8 +221,7 @@ public class GameManager : MonoBehaviour {
 
 	public void SetStageInfos(int curCount, int maxCount)
 	{
-		currentStageIndex = curCount;
-		currentStageCount.text = string.Format("{0}/{1}", curCount.ToString(), maxCount.ToString());
+		currentStageCount.text = string.Format("{0}/{1}", currentStageIndex.ToString(), NetworkManager.Ins.selectedLevelTotalStageCount.ToString());
 	}
 
 	public void AnswerButtonClicked(int index)
@@ -303,7 +307,21 @@ public class GameManager : MonoBehaviour {
 		currentFindDiffCount.text = "0";
 		answerFindCount = 0;
 
-		NetworkManager.Ins.GetStageInfoFromServer(currentStageIndex+1);
+		NetworkManager.Ins.SendCompleteStageInfo();
+		NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex++]);
+
+		if (NetworkManager.Ins.selectedStageLevel == LEVEL.EASY)
+		{
+			PlayerPrefs.SetInt("CurrentEasyStageIndex", currentStageIndex);
+		}	
+		else if (NetworkManager.Ins.selectedStageLevel == LEVEL.NORMAL)
+		{
+			PlayerPrefs.SetInt("CurrentNormalStageIndex", currentStageIndex);
+		}
+		else if (NetworkManager.Ins.selectedStageLevel == LEVEL.HARD)
+		{
+			PlayerPrefs.SetInt("CurrentHardStageIndex", currentStageIndex);
+		}
 	}
 
 	public void ResumeGame()
@@ -330,7 +348,7 @@ public class GameManager : MonoBehaviour {
 		CurtainLeft.CrossFadeAlpha(1f, 1f, false);
 		CurtainRight.CrossFadeAlpha(1f, 1f, false);
 
-		NetworkManager.Ins.GetStageInfoFromServer(1);
+		NetworkManager.Ins.GetStageInfoFromServer(currentStageIndex);
 	}
 
 	public void ExitGame()
@@ -400,5 +418,18 @@ public class GameManager : MonoBehaviour {
 		}
 
 		return null;
+	}
+
+	int GetNextStageNumber()
+	{
+		for(int i=0; i<NetworkManager.Ins.currentLevelstageIndexList.Length; i++)
+		{
+			if (NetworkManager.Ins.currentLevelstageIndexList[i] == currentStageIndex)
+			{
+				return NetworkManager.Ins.currentLevelstageIndexList[i+1];
+			}
+		}
+
+		return 1;
 	}
 }

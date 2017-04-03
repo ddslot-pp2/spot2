@@ -3,24 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 public class TitleManager : MonoBehaviour {
 	public GameObject shopPanel;
 	public GameObject levelSelectPanel;
-=======
-public class TitleManager : MonoBehaviour
-{
->>>>>>> origin/master
-=======
-public class TitleManager : MonoBehaviour
-{
->>>>>>> origin/master
 
 	// Use this for initialization
 	void Start ()
     {
-        StartCoroutine(RequestItemInfo(http://images.earthcam.com/ec_metros/ourcams/fridays.jpg));
+        //StartCoroutine(RequestItemInfo(http://images.earthcam.com/ec_metros/ourcams/fridays.jpg));
+
+		if (PlayerPrefs.GetString("uid") == null)
+		{
+			//show select login type
+		}
     }
 	
 	// Update is called once per frame
@@ -31,18 +26,14 @@ public class TitleManager : MonoBehaviour
 
 	public void OnClickedStartButton()
 	{
-		SceneManager.LoadScene("Main");
+		levelSelectPanel.SetActive(true);
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	public void OnclickedShopButton()
 	{
 		shopPanel.SetActive(true);
 	}
-=======
-=======
->>>>>>> origin/master
+
     public void OnClickedShoptItemButton()
     {
         SceneManager.LoadScene("ShopItem");
@@ -66,28 +57,34 @@ public class TitleManager : MonoBehaviour
 
         }
     }
-<<<<<<< HEAD
->>>>>>> origin/master
 
 	public void OnSelectedEasyLevel()
 	{
-		
+		NetworkManager.Ins.GetLevelStageList(LEVEL.EASY);
 	}
 
 	public void OnSelectedNormalLevel()
 	{
-		
+		NetworkManager.Ins.GetLevelStageList(LEVEL.NORMAL);
 	}
 
 	public void OnSelectedHardLevel()
 	{
-		
+		NetworkManager.Ins.GetLevelStageList(LEVEL.HARD);
 	}
-=======
->>>>>>> origin/master
 
 	public void OnSelectedHellLevel()
 	{
 		
+	}
+
+	public void OnSelectGuestLogin()
+	{
+		PlayerPrefs.SetString("uid", SystemInfo.deviceUniqueIdentifier);
+	}
+
+	public void OnSelectFacebookLogin()
+	{
+		//show facebook login
 	}
 }
