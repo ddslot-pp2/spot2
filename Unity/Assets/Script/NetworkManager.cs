@@ -207,15 +207,15 @@ public class NetworkManager : MonoBehaviour {
 
 				if (level == LEVEL.EASY)
 				{
-					currentStageIndex = PlayerPrefs.GetInt("CurrentEasyStageIndex", 1);
+					currentStageIndex = PlayerPrefs.GetInt("CurrentEasyStageIndex", 0);
 				}
 				else if (level == LEVEL.NORMAL)
 				{
-					currentStageIndex = PlayerPrefs.GetInt("CurrentNormalStageIndex", 1);
+					currentStageIndex = PlayerPrefs.GetInt("CurrentNormalStageIndex", 0);
 				}
 				else if (level == LEVEL.HARD)
 				{
-					currentStageIndex = PlayerPrefs.GetInt("CurrentHardStageIndex", 1);
+					currentStageIndex = PlayerPrefs.GetInt("CurrentHardStageIndex", 0);
 				}	
 
 				SceneManager.LoadScene("Main");

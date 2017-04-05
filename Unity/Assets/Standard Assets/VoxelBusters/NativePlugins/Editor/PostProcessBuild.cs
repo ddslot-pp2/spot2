@@ -161,7 +161,7 @@ namespace VoxelBusters.NativePlugins
 				{
 					const string _kBundleVersionKey		= "CFBundleVersion";
 
-					_contents[_iter]		= string.Format("const NSString *bundleIdentifier\t= @\"{0}\";", PlayerSettings.bundleIdentifier);
+					_contents[_iter]		= string.Format("const NSString *bundleIdentifier\t= @\"{0}\";", PlayerSettings.applicationIdentifier);
 					_contents[_iter + 1]	= string.Format("const NSString *bundleVersion\t\t= @\"{0}\";", infoPlist[_kBundleVersionKey]);
 					break;
 				}

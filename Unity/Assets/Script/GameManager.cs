@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour {
 	void Start () {
 		Debug.Log(NetworkManager.Ins.currentStageIndex);
 		currentStageIndex = NetworkManager.Ins.currentStageIndex;
-		NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex-1]);
+		NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex]);
 	}
 
 	public void StartStage()
@@ -221,7 +221,7 @@ public class GameManager : MonoBehaviour {
 
 	public void SetStageInfos(int curCount, int maxCount)
 	{
-		currentStageCount.text = string.Format("{0}/{1}", currentStageIndex.ToString(), NetworkManager.Ins.selectedLevelTotalStageCount.ToString());
+		currentStageCount.text = string.Format("{0}/{1}", (currentStageIndex+1).ToString(), NetworkManager.Ins.selectedLevelTotalStageCount.ToString());
 	}
 
 	public void AnswerButtonClicked(int index)
@@ -336,6 +336,7 @@ public class GameManager : MonoBehaviour {
 		DisableAnswerButtons();
 		pauseMenuPanel.gameObject.SetActive(false);
 		isShownPauseMenu = false;
+		isShownPauseMenu = false;
 		currentStageTotalTime = 0;
 		stagePlayTime = -1f;
 		isStageOver = false;
@@ -348,7 +349,10 @@ public class GameManager : MonoBehaviour {
 		CurtainLeft.CrossFadeAlpha(1f, 1f, false);
 		CurtainRight.CrossFadeAlpha(1f, 1f, false);
 
-		NetworkManager.Ins.GetStageInfoFromServer(currentStageIndex);
+		pauseButton.SetActive(true);
+		startButton.SetActive(false);
+
+		NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex]);
 	}
 
 	public void ExitGame()
