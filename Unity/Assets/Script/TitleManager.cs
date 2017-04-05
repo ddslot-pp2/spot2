@@ -6,15 +6,32 @@ using UnityEngine.SceneManagement;
 public class TitleManager : MonoBehaviour {
 	public GameObject shopPanel;
 	public GameObject levelSelectPanel;
+	public GameObject loginTypePanel;
+	public GameObject facebookLoginButton;
+
+	public static TitleManager Ins;
+
+	/// <summary>
+	/// Awake is called when the script instance is being loaded.
+	/// </summary>
+	void Awake()
+	{
+		Ins = this;
+	}
 
 	// Use this for initialization
 	void Start ()
     {
         //StartCoroutine(RequestItemInfo(http://images.earthcam.com/ec_metros/ourcams/fridays.jpg));
 
-		if (PlayerPrefs.GetString("uid") == null)
+		if (PlayerPrefs.GetString("uid", "") == "")
 		{
 			//show select login type
+		}
+		
+		if (PlayerPrefs.GetInt("isFacebookLogin", 0) == 0)
+		{
+			facebookLoginButton.SetActive(true);
 		}
     }
 	
@@ -26,7 +43,14 @@ public class TitleManager : MonoBehaviour {
 
 	public void OnClickedStartButton()
 	{
-		levelSelectPanel.SetActive(true);
+		if (PlayerPrefs.GetString("uid", "") == "")
+		{
+			loginTypePanel.SetActive(true);
+		}
+		else
+		{
+			NetworkManager.Ins.GetUserInfo();
+		}
 	}
 
 	public void OnclickedShopButton()
@@ -81,10 +105,18 @@ public class TitleManager : MonoBehaviour {
 	public void OnSelectGuestLogin()
 	{
 		PlayerPrefs.SetString("uid", SystemInfo.deviceUniqueIdentifier);
+
+		NetworkManager.Ins.GetUserInfo();
 	}
 
 	public void OnSelectFacebookLogin()
 	{
 		//show facebook login
+	}
+
+	public void OnFinishedGetUserInfo()
+	{
+		loginTypePanel.SetActive(false);
+		levelSelectPanel.SetActive(true);
 	}
 }

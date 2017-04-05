@@ -224,6 +224,12 @@ public class GameManager : MonoBehaviour {
 		currentStageCount.text = string.Format("{0}/{1}", (currentStageIndex+1).ToString(), NetworkManager.Ins.selectedLevelTotalStageCount.ToString());
 	}
 
+	public void SetUserInfo()
+	{
+		HintItemCount.text = string.Format("x{0}", NetworkManager.Ins.userInfo.hint_item_count.ToString());
+		AddTimeItemCount.text =string.Format("x{0}", NetworkManager.Ins.userInfo.timer_item_count.ToString());
+	}
+
 	public void AnswerButtonClicked(int index)
 	{
 		if (!leftAnswerButtonList[index].circleAnimObject.activeSelf)
@@ -384,26 +390,40 @@ public class GameManager : MonoBehaviour {
 
 	public void ClickedHintButton()
 	{
+		NetworkManager.Ins.SendUseItem(0);
+	}
+
+	public void ShowAndHideHint()
+	{
+		StartCoroutine("Co_ShowAndHideHint");
+	}
+
+	IEnumerator Co_ShowAndHideHint()
+	{
 		AnswerButton btn = GetNextAnswerButton();
 		//아이템 갯수 갱신
 		if (btn != null)
 		{
-			StartCoroutine(Co_ShowAndHideHint(btn.hintAnimObject));
+			GameObject obj = btn.hintAnimObject;
+
+			obj.SetActive(true);
+
+			yield return new WaitForSeconds(2f);
+
+			obj.SetActive(false);
 		}
-	}
 
-	IEnumerator Co_ShowAndHideHint(GameObject obj)
-	{
-		obj.SetActive(true);
-
-		yield return new WaitForSeconds(2f);
-
-		obj.SetActive(false);
+		yield return null;
 	}
 
 	public void ClickedAddTimeButton()
 	{
+		NetworkManager.Ins.SendUseItem(1);
 		//아이템 갯수 갱신
+	}
+
+	public void AddStageTimeByItem()
+	{
 		stagePlayTime -= 2.0f;
 		if (stagePlayTime < 0f)
 		{

@@ -62,6 +62,21 @@ public class UserInfo
 	public int watch_ad_count;
 }
 
+[Serializable]
+public class UseItemInfo
+{
+	public bool result;
+	public int hint_item_count;
+	public int timer_item_count;
+}
+
+[Serializable]
+public class ItemInfo{
+	public bool result;
+	public string os;
+	public string[] items;
+}
+
 public enum LEVEL
 {
 	EASY = 1,
@@ -82,6 +97,9 @@ public class NetworkManager : MonoBehaviour {
 	public LEVEL selectedStageLevel;
 	[HideInInspector]
 	public int currentStageIndex = 0;
+
+	[HideInInspector]
+	public UserInfo userInfo;
 
 	/// <summary>
 	/// Awake is called when the script instance is being loaded.
@@ -155,6 +173,7 @@ public class NetworkManager : MonoBehaviour {
 			GameManager.Ins.SetStageInfos(info.current_stage_count, info.total_stage_count);
 			GameManager.Ins.SetDiffCountInfos();
 			GameManager.Ins.currentStageTotalTime = info.play_time-1;
+			GameManager.Ins.SetUserInfo();
 
 			GameManager.Ins.StartStage();
 		}
@@ -230,15 +249,19 @@ public class NetworkManager : MonoBehaviour {
 
 	IEnumerator Co_GetUserInfo()
 	{
-		WWW www = new WWW("http://t.05day.com/user-info/fetch/" + SystemInfo.deviceUniqueIdentifier);
+		WWW www = new WWW("http://t.05day.com/user-info/fetch/" + PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier));
 
 		yield return www;
+		
+		Debug.Log(www.text);
 
 		UserInfo userInfo = JsonUtility.FromJson<UserInfo>(www.text);
 
 		if (userInfo.result)
 		{
+			this.userInfo = userInfo;
 
+			TitleManager.Ins.OnFinishedGetUserInfo();
 		}
 	}
 
@@ -270,15 +293,61 @@ public class NetworkManager : MonoBehaviour {
 	
 	public void SendUseItem(int itemId)
 	{
-
+		StartCoroutine("Co_SendUseItem", itemId);
 	}
 
 	IEnumerator Co_SendUseItem(int itemId)
 	{
-		string url = string.Format("http://t.05day.com/user-info /use-item/{0}/{1}", PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier), itemId.ToString());
+		string url = string.Format("http://t.05day.com/user-info/use-item/{0}/{1}", PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier), itemId.ToString());
 		WWW www = new WWW(url);
 
 		yield return www;
 
+		Debug.Log(www.text);
+
+		UseItemInfo useItemInfo = JsonUtility.FromJson<UseItemInfo>(www.text);
+
+		if (useItemInfo.result)
+		{
+			userInfo.hint_item_count = useItemInfo.hint_item_count;
+			userInfo.timer_item_count = useItemInfo.timer_item_count;
+
+			GameManager.Ins.SetUserInfo();
+			if (itemId == 0)
+			{
+				GameManager.Ins.ShowAndHideHint();
+			}
+			else if (itemId == 1)
+			{
+				GameManager.Ins.AddStageTimeByItem();
+			}
+		}
+	}
+
+	public void GetItemInfoList()
+	{
+		StartCoroutine("Co_GetItemInfoList");
+	}
+
+	IEnumerator Co_GetItemInfoList()
+	{
+		string os = "android";
+		#if UNITY_IOS
+		os = "ios"
+		#endif
+
+		string url = string.Format("http://t.05day.com/user-info/item-list/{0}", os);
+		WWW www = new WWW(url);
+
+		yield return www;
+
+		Debug.Log(www.text);
+
+		ItemInfo itemInfo = JsonUtility.FromJson<ItemInfo>(www.text);
+
+		if (itemInfo.result)
+		{
+			ShopManager.Ins.UpdateItemsInfo(itemInfo.items);
+		}
 	}
 }

@@ -4,12 +4,25 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class ShopManager : MonoBehaviour {
+    public static ShopManager Ins;
+
+    public Sprite hintItemIcon;
+    public Sprite timerItemIcon;
+
+    /// <summary>
+    /// Awake is called when the script instance is being loaded.
+    /// </summary>
+    void Awake()
+    {
+        Ins = this;
+    }
+
 	public ShopItem[] itemList;
 
     public enum ITEM { NONE=0, HINT, INC_TIMER };
 	void Start ()
     {
-		
+		NetworkManager.Ins.GetItemInfoList();
 	}
 
 	void Update ()
@@ -17,9 +30,25 @@ public class ShopManager : MonoBehaviour {
 		
 	}
 
-	public void UpdateItemsInfo()
+	public void UpdateItemsInfo(string[] itemInfoList)
 	{
+        int index = 1;
+        for(int i=0; i<itemInfoList.Length; i++)
+        {
+            string[] split = itemInfoList[i].Split('_');
+            if (split[0] == "HINT")
+            {
+                itemList[index].itemIcon.sprite = hintItemIcon;
+                itemList[index].countText.text = string.Format("x{0}", split[1]);
+            }           
+            else if (split[0] == "INC")
+            {
+                itemList[index].itemIcon.sprite = timerItemIcon;
+                itemList[index].countText.text = string.Format("x{0}", split[2]);
+            }
 
+            index++;
+        }
 	}
 
 	public void Close()
