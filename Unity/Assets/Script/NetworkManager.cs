@@ -52,11 +52,11 @@ public class UserInfo
 {
 	public bool result;
 	public string login_type;
-	public int current_level_1;
-	public int current_level_2;
-	public int current_level_3;
-	public int current_level_4;
-	public int current_level_5;
+	public int complete_level_1;
+	public int complete_level_2;
+	public int complete_level_3;
+	public int complete_level_4;
+	public int complete_level_5;
 	public int hint_item_count;
 	public int timer_item_count;
 	public int watch_ad_count;
@@ -66,7 +66,8 @@ public class UserInfo
 public class UseItemInfo
 {
 	public bool result;
-	public int hint_item_count;
+    //public bool is_use_item;
+    public int hint_item_count;
 	public int timer_item_count;
 }
 
@@ -101,10 +102,13 @@ public class NetworkManager : MonoBehaviour {
 	[HideInInspector]
 	public UserInfo userInfo;
 
-	/// <summary>
-	/// Awake is called when the script instance is being loaded.
-	/// </summary>
-	void Awake()
+    private string req_url = "http://t.05day.com";
+    //private string req_url = "http://127.0.0.1:3000";
+
+    /// <summary>
+    /// Awake is called when the script instance is being loaded.
+    /// </summary>
+    void Awake()
 	{
 		//PlayerPrefs.DeleteAll();
 		Ins = this;
@@ -128,9 +132,12 @@ public class NetworkManager : MonoBehaviour {
 
 	IEnumerator Co_GetStageInfoFromServer(int stageIndex)
 	{
-		WWW www = new WWW("http://t.05day.com/stage-info/" + stageIndex);
+		WWW www = new WWW(req_url + "/stage-info/" + stageIndex);
 
-		yield return www;
+        Debug.Log(req_url + "/stage-info/" + stageIndex);
+
+
+        yield return www;
 
 		Debug.Log(www.text);
 
@@ -188,7 +195,7 @@ public class NetworkManager : MonoBehaviour {
 
 	IEnumerator Co_GetLevelStageList(LEVEL level)
 	{
-		WWW www = new WWW("http://t.05day.com/stage-info/total-stage/" + (int)level);
+		WWW www = new WWW(req_url +  "/stage-info/total-stage/" + (int)level);
 
 		yield return www;
 
@@ -204,17 +211,20 @@ public class NetworkManager : MonoBehaviour {
 			string url;
 			if (selectedLevelTotalStageCount < 10)
 			{
-				url = "http://t.05day.com/stage-info/" + (int)level + "/1/" + selectedLevelTotalStageCount;
+				url = req_url + "/stage-info/" + (int)level + "/1/" + selectedLevelTotalStageCount;
 			}
 			else
 			{
 				levelStageEndIndex += 10;
-				url = "http://t.05day.com/stage-info/" + (int)level + "/" + levelStageStartIndex + "/" + levelStageEndIndex;
+				url = req_url + "stage-info/" + (int)level + "/" + levelStageStartIndex + "/" + levelStageEndIndex;
 			}
 
 			WWW www2 = new WWW(url);
 
-			yield return www2;
+            Debug.Log(url);
+
+
+            yield return www2;
 
 			Debug.Log(www2.text);
 
@@ -224,6 +234,38 @@ public class NetworkManager : MonoBehaviour {
 			{
 				currentLevelstageIndexList = levelInfo.stage_count;
 
+                var completeStage = 0;
+                if (level == LEVEL.EASY)
+                {
+                    completeStage = userInfo.complete_level_1;
+                }
+                else if (level == LEVEL.NORMAL)
+                {
+                    completeStage = userInfo.complete_level_2;
+                }
+                else if (level == LEVEL.HARD)
+                {
+                    completeStage = userInfo.complete_level_3;
+                }
+
+                Debug.Log("completeStage: " + completeStage);
+                var is_end_stage = true;
+                for (var i = 0; i < currentLevelstageIndexList.Length; ++i)
+                {
+                    if (currentLevelstageIndexList[i] > completeStage)
+                    {
+                        currentStageIndex = i;
+                        is_end_stage = false;
+                        break;
+                    }
+                }
+
+                if (is_end_stage)
+                {
+                    Debug.Log("마지막 스테이지");
+                }
+
+                         /*
 				if (level == LEVEL.EASY)
 				{
 					currentStageIndex = PlayerPrefs.GetInt("CurrentEasyStageIndex", 0);
@@ -235,21 +277,24 @@ public class NetworkManager : MonoBehaviour {
 				else if (level == LEVEL.HARD)
 				{
 					currentStageIndex = PlayerPrefs.GetInt("CurrentHardStageIndex", 0);
-				}	
+				}
+                	       */
 
-				SceneManager.LoadScene("Main");
+                SceneManager.LoadScene("Main");
 			}
 		}
 	}
 
-	public void GetUserInfo()
+	public void GetUserInfo(string LoginType = "guest")
 	{
-		StartCoroutine("Co_GetUserInfo");
+		StartCoroutine("Co_GetUserInfo", LoginType);
 	}
 
-	IEnumerator Co_GetUserInfo()
+	IEnumerator Co_GetUserInfo(string LoginType)
 	{
-		WWW www = new WWW("http://t.05day.com/user-info/fetch/" + PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier));
+		WWW www = new WWW(req_url + "/user-info/fetch/" + LoginType + "/" + PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier));
+
+        Debug.Log(req_url);
 
 		yield return www;
 		
@@ -265,6 +310,7 @@ public class NetworkManager : MonoBehaviour {
 		}
 	}
 
+    // 스테이지 시작 했다고 로그성 알려주기
 	public void SendStartStageInfo()
 	{
 		StartCoroutine("Co_SendStartStageInfo");
@@ -272,7 +318,7 @@ public class NetworkManager : MonoBehaviour {
 
 	IEnumerator Co_SendStartStageInfo()
 	{
-		string url = string.Format("http://t.05day.com/user-info/start-stage/{0}/{1}", PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier), currentLevelstageIndexList[GameManager.Ins.currentStageIndex].ToString());
+		string url = string.Format(req_url + "/user-info/start-stage/{0}/{1}", PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier), currentLevelstageIndexList[GameManager.Ins.currentStageIndex].ToString());
 		WWW www = new WWW(url);
 
 		yield return www;
@@ -285,20 +331,24 @@ public class NetworkManager : MonoBehaviour {
 
 	IEnumerator Co_SendCompleteStageInfo()
 	{
-		string url = string.Format("http://t.05day.com/user-info/stage-complete/{0}/{1}", PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier), currentLevelstageIndexList[GameManager.Ins.currentStageIndex].ToString());
+        var level = (int)selectedStageLevel;
+        var stage_count = currentLevelstageIndexList[GameManager.Ins.currentStageIndex];
+        Debug.Log("stage_count: " + stage_count);
+
+        string url = string.Format(req_url + "/user-info/stage-complete/{0}/{1}/{2}", PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier), level.ToString(), stage_count);
 		WWW www = new WWW(url);
 
 		yield return www;
 	}
 	
-	public void SendUseItem(int itemId)
+	public void SendUseItem(string itemId)
 	{
 		StartCoroutine("Co_SendUseItem", itemId);
 	}
 
-	IEnumerator Co_SendUseItem(int itemId)
+	IEnumerator Co_SendUseItem(string itemId)
 	{
-		string url = string.Format("http://t.05day.com/user-info/use-item/{0}/{1}", PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier), itemId.ToString());
+		string url = string.Format(req_url + "/user-info/use-item/{0}/{1}", PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier), itemId.ToString());
 		WWW www = new WWW(url);
 
 		yield return www;
@@ -312,18 +362,24 @@ public class NetworkManager : MonoBehaviour {
 			userInfo.hint_item_count = useItemInfo.hint_item_count;
 			userInfo.timer_item_count = useItemInfo.timer_item_count;
 
-			GameManager.Ins.SetUserInfo();
-			if (itemId == 0)
+            Debug.Log("hint_item_count: " + userInfo.hint_item_count);
+            Debug.Log("timer_item_count: " + userInfo.timer_item_count);
+
+
+            GameManager.Ins.SetUserInfo();
+			if (itemId == "hint_item")
 			{
 				GameManager.Ins.ShowAndHideHint();
 			}
-			else if (itemId == 1)
+			else if (itemId == "timer_item")
 			{
 				GameManager.Ins.AddStageTimeByItem();
 			}
 		}
 	}
 
+
+    // os별 특성에 맞춰서 아이템 정보 가져오기
 	public void GetItemInfoList()
 	{
 		StartCoroutine("Co_GetItemInfoList");
@@ -336,7 +392,7 @@ public class NetworkManager : MonoBehaviour {
 		os = "ios"
 		#endif
 
-		string url = string.Format("http://t.05day.com/user-info/item-list/{0}", os);
+		string url = string.Format(req_url + "/user-info/item-list/{0}", os);
 		WWW www = new WWW(url);
 
 		yield return www;

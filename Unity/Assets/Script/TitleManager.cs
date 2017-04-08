@@ -22,8 +22,6 @@ public class TitleManager : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        //StartCoroutine(RequestItemInfo(http://images.earthcam.com/ec_metros/ourcams/fridays.jpg));
-
 		if (PlayerPrefs.GetString("uid", "") == "")
 		{
 			//show select login type
@@ -61,25 +59,6 @@ public class TitleManager : MonoBehaviour {
     public void OnClickedShoptItemButton()
     {
         SceneManager.LoadScene("ShopItem");
-    }
-
-    
-    // 입장하면서 유저 아이템 정보가져오기 인데 싱글턴으로;
-    IEnumerator RequestItemInfo(string url)
-    {
-        WWW www = new WWW(url);
-        yield return www;
-
-        //www.responseHeaders
-
-        if (www.isDone)
-        {
-
-        }
-        else
-        {
-
-        }
     }
 
 	public void OnSelectedEasyLevel()

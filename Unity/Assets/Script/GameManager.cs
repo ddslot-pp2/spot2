@@ -221,7 +221,8 @@ public class GameManager : MonoBehaviour {
 
 	public void SetStageInfos(int curCount, int maxCount)
 	{
-		currentStageCount.text = string.Format("{0}/{1}", (currentStageIndex+1).ToString(), NetworkManager.Ins.selectedLevelTotalStageCount.ToString());
+        var selected_max_stage = NetworkManager.Ins.selectedLevelTotalStageCount - 1;
+        currentStageCount.text = string.Format("{0}/{1}", (currentStageIndex+1).ToString(), selected_max_stage.ToString());
 	}
 
 	public void SetUserInfo()
@@ -314,7 +315,16 @@ public class GameManager : MonoBehaviour {
 		answerFindCount = 0;
 
 		NetworkManager.Ins.SendCompleteStageInfo();
-		NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex++]);
+
+        currentStageIndex = currentStageIndex + 1;
+
+        if (NetworkManager.Ins.currentLevelstageIndexList.Length <= currentStageIndex)
+        {
+            Debug.Log("마지막 스테이지");
+            return;
+        }
+
+        NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex]);
 
 		if (NetworkManager.Ins.selectedStageLevel == LEVEL.EASY)
 		{
@@ -328,6 +338,7 @@ public class GameManager : MonoBehaviour {
 		{
 			PlayerPrefs.SetInt("CurrentHardStageIndex", currentStageIndex);
 		}
+        
 	}
 
 	public void ResumeGame()
@@ -390,8 +401,9 @@ public class GameManager : MonoBehaviour {
 
 	public void ClickedHintButton()
 	{
-		NetworkManager.Ins.SendUseItem(0);
-	}
+		NetworkManager.Ins.SendUseItem("hint_item");
+
+    }
 
 	public void ShowAndHideHint()
 	{
@@ -418,7 +430,7 @@ public class GameManager : MonoBehaviour {
 
 	public void ClickedAddTimeButton()
 	{
-		NetworkManager.Ins.SendUseItem(1);
+		NetworkManager.Ins.SendUseItem("timer_item");
 		//아이템 갯수 갱신
 	}
 
