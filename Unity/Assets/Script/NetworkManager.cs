@@ -378,9 +378,35 @@ public class NetworkManager : MonoBehaviour {
 		}
 	}
 
+    // 아이템 구매하기
+    public void PurchaseItemRequest(string item_id)
+    {
+        StartCoroutine("Co_PurchaseItemRequest", item_id);
+    }
+
+    IEnumerator Co_PurchaseItemRequest(string item_id)
+    {
+        string url = string.Format(req_url + "/user-info/purchase-item/{0}/{1}", PlayerPrefs.GetString("uid", SystemInfo.deviceUniqueIdentifier), item_id);
+        WWW www = new WWW(url);
+
+        yield return www;
+
+        Debug.Log(www.text);
+
+        UseItemInfo itemInfo = JsonUtility.FromJson<UseItemInfo>(www.text);
+
+        if (itemInfo.result)
+        {
+            var hint_item_count = itemInfo.hint_item_count;
+            var timer_item_count = itemInfo.timer_item_count;
+
+            Debug.Log("hint_item_count: "  + hint_item_count);
+            Debug.Log("timer_item_count: " + timer_item_count);
+        }
+    }
 
     // os별 특성에 맞춰서 아이템 정보 가져오기
-	public void GetItemInfoList()
+    public void GetItemInfoList()
 	{
 		StartCoroutine("Co_GetItemInfoList");
 	}
