@@ -66,7 +66,6 @@ public class GameManager : MonoBehaviour {
 	void Awake()
 	{
 		Ins = this;
-		DontDestroyOnLoad(gameObject);
 	}
 
 	// Use this for initialization
@@ -117,6 +116,19 @@ public class GameManager : MonoBehaviour {
 
 			Invoke("ShowPauseMenu", 1.5f);
 		}
+
+		//if (Application.platform == RuntimePlatform.Android)
+        //{
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                GameObject prefab = Resources.Load("Popup") as GameObject;
+                Popup popup = Instantiate(prefab).GetComponent<Popup>();
+                popup.transform.SetParent(canvasTrans);
+                popup.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+				popup.transform.localScale = Vector3.one;
+                popup.Show(POPUPTYPE.MAINMENU);
+            }
+        //}
     }
 
     private float GetCurrentStageTotalTime()
@@ -262,6 +274,8 @@ public class GameManager : MonoBehaviour {
 	{
 		//잘못된 곳을 클릭했을 때 남은 시간을 감소시킨다
 		stagePlayTime += incorrectTimePenalty;
+		Debug.Log(Input.mousePosition);
+		Debug.Log(Camera.main.ViewportToScreenPoint(Input.mousePosition));
 		inCorrectAnswerImage.rectTransform.anchoredPosition = Input.mousePosition;
 		inCorrectAnswerImage.gameObject.SetActive(true);
 		
@@ -344,7 +358,7 @@ public class GameManager : MonoBehaviour {
 	public void ResumeGame()
 	{
 		pauseMenuPanel.gameObject.SetActive(false);
-
+ 
 		isShownPauseMenu = false;
 	}
 
@@ -374,7 +388,7 @@ public class GameManager : MonoBehaviour {
 
 	public void ExitGame()
 	{
-		Application.Quit();
+		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("Title");
 	}
 
 	public void DisableAnswerButtons()

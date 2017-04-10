@@ -36,7 +36,17 @@ public class TitleManager : MonoBehaviour, IStoreListener {
 	// Update is called once per frame
 	void Update ()
     {
-		
+		//if (Application.platform == RuntimePlatform.Android)
+        //{
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                GameObject prefab = Resources.Load("Popup") as GameObject;
+                Popup popup = Instantiate(prefab).GetComponent<Popup>();
+                popup.transform.SetParent(GameObject.FindObjectOfType<Canvas>().transform);
+                popup.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+                popup.Show(POPUPTYPE.EXITGAME);
+            }
+        //} 
 	}
 
 	public void OnClickedStartButton()
