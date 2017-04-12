@@ -8,7 +8,8 @@ public enum POPUPTYPE
 {
 	EXITGAME,
 	MAINMENU,
-	BUYITEM
+	BUYITEM,
+	ENDLEVEL
 }
 public class Popup : MonoBehaviour {
 	public POPUPTYPE type;
@@ -35,6 +36,7 @@ public class Popup : MonoBehaviour {
 				break;
 			}
 			case POPUPTYPE.MAINMENU:
+			case POPUPTYPE.ENDLEVEL:
 			{
 				SceneManager.LoadSceneAsync("Title");
 				break;
@@ -66,6 +68,9 @@ public class Popup : MonoBehaviour {
 				break;
 			case POPUPTYPE.BUYITEM:
 				body.text = "Buy this Item?";
+				break;
+			case POPUPTYPE.ENDLEVEL:
+				body.text = "Good Job! Level Complete!";
 				break;
 		}		
 	}

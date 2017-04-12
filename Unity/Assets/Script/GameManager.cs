@@ -58,6 +58,18 @@ public class GameManager : MonoBehaviour {
 	public int selectedLevelTotalStageCount = 0;
 	public int[] selectedLevelStageList;
 
+	bool isShowingHint = false;
+
+	public GameObject userInputPanel;
+
+	bool blockUserInput
+	{
+		set
+		{
+			userInputPanel.GetComponent<Image>().raycastTarget = value;
+		}
+	}
+
 	public static GameManager Ins;
 
 	/// <summary>
@@ -70,6 +82,7 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		blockUserInput = false;
 		Debug.Log(NetworkManager.Ins.currentStageIndex);
 		currentStageIndex = NetworkManager.Ins.currentStageIndex;
 		NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex]);
@@ -97,6 +110,8 @@ public class GameManager : MonoBehaviour {
 		yield return new WaitForSeconds(1f);
 
 		goImg.gameObject.SetActive(false);
+
+		blockUserInput = true;
 	}
 	
 	// Update is called once per frame
@@ -111,6 +126,7 @@ public class GameManager : MonoBehaviour {
 
 		if (stagePlayTime >= GetCurrentStageTotalTime() && !isStageOver)
 		{
+			blockUserInput = false;
 			isStageOver = true;
 			gameoverImg.gameObject.SetActive(true);
 
@@ -292,6 +308,7 @@ public class GameManager : MonoBehaviour {
 	{
 		if (answerFindCount >= leftAnswerButtonList.Count)
 		{
+			blockUserInput = false;
 			youWinImg.gameObject.SetActive(true);
 			foreach(AnswerButton btn in leftAnswerButtonList)
 			{
@@ -330,29 +347,40 @@ public class GameManager : MonoBehaviour {
 
 		NetworkManager.Ins.SendCompleteStageInfo();
 
-        currentStageIndex = currentStageIndex + 1;
-
-        if (NetworkManager.Ins.currentLevelstageIndexList.Length <= currentStageIndex)
-        {
-            Debug.Log("마지막 스테이지");
-            return;
-        }
-
-        NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex]);
-
-		if (NetworkManager.Ins.selectedStageLevel == LEVEL.EASY)
+		if (currentStageIndex < NetworkManager.Ins.selectedLevelTotalStageCount)
 		{
-			PlayerPrefs.SetInt("CurrentEasyStageIndex", currentStageIndex);
-		}	
-		else if (NetworkManager.Ins.selectedStageLevel == LEVEL.NORMAL)
-		{
-			PlayerPrefs.SetInt("CurrentNormalStageIndex", currentStageIndex);
+			currentStageIndex = currentStageIndex + 1;
+
+			if (NetworkManager.Ins.currentLevelstageIndexList.Length <= currentStageIndex)
+			{
+				Debug.Log("마지막 스테이지");
+				return;
+			}
+
+			NetworkManager.Ins.GetStageInfoFromServer(NetworkManager.Ins.currentLevelstageIndexList[currentStageIndex]);
+
+			if (NetworkManager.Ins.selectedStageLevel == LEVEL.EASY)
+			{
+				PlayerPrefs.SetInt("CurrentEasyStageIndex", currentStageIndex);
+			}	
+			else if (NetworkManager.Ins.selectedStageLevel == LEVEL.NORMAL)
+			{
+				PlayerPrefs.SetInt("CurrentNormalStageIndex", currentStageIndex);
+			}
+			else if (NetworkManager.Ins.selectedStageLevel == LEVEL.HARD)
+			{
+				PlayerPrefs.SetInt("CurrentHardStageIndex", currentStageIndex);
+			}
 		}
-		else if (NetworkManager.Ins.selectedStageLevel == LEVEL.HARD)
+		else
 		{
-			PlayerPrefs.SetInt("CurrentHardStageIndex", currentStageIndex);
+			GameObject prefab = Resources.Load("Popup") as GameObject;
+			Popup popup = Instantiate(prefab).GetComponent<Popup>();
+			popup.transform.SetParent(canvasTrans);
+			popup.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+			popup.transform.localScale = Vector3.one;
+			popup.Show(POPUPTYPE.ENDLEVEL);
 		}
-        
 	}
 
 	public void ResumeGame()
@@ -415,8 +443,10 @@ public class GameManager : MonoBehaviour {
 
 	public void ClickedHintButton()
 	{
-		NetworkManager.Ins.SendUseItem("hint_item");
-
+		if (!isShowingHint)
+		{
+			NetworkManager.Ins.SendUseItem("hint_item");
+		}
     }
 
 	public void ShowAndHideHint()
@@ -437,6 +467,8 @@ public class GameManager : MonoBehaviour {
 			yield return new WaitForSeconds(2f);
 
 			obj.SetActive(false);
+
+			isShowingHint = false;
 		}
 
 		yield return null;
