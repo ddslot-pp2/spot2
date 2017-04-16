@@ -237,6 +237,10 @@ public class ShopManager : MonoBehaviour, IStoreListener {
             var options = new ShowOptions { resultCallback = HandleShowResult };
             Advertisement.Show("rewardedVideo", options);
         }
+        else
+        {
+            
+        }
     }
 
     private void HandleShowResult(ShowResult result)

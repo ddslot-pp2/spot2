@@ -143,7 +143,7 @@ public class NetworkManager : MonoBehaviour {
 
 		StageInfo info =  JsonUtility.FromJson<StageInfo>(www.text);
 
-		if (info.result)
+		if (info != null && info.result)
 		{
 			//마지막 스테이지
 			if (info.is_max_stage)
@@ -184,6 +184,10 @@ public class NetworkManager : MonoBehaviour {
 
 			GameManager.Ins.StartStage();
 		}
+		else
+		{
+			Debug.LogError("ServerError!");
+		}
 	}
 
 	int levelStageStartIndex = 1;
@@ -203,7 +207,7 @@ public class NetworkManager : MonoBehaviour {
 
 		TotalLevelInfo totalInfo = JsonUtility.FromJson<TotalLevelInfo>(www.text);
 
-		if (totalInfo.result)
+		if (totalInfo != null && totalInfo.result)
 		{
 			selectedStageLevel = level;
 			selectedLevelTotalStageCount = totalInfo.total_stage_count;
@@ -216,7 +220,7 @@ public class NetworkManager : MonoBehaviour {
 			else
 			{
 				levelStageEndIndex += 10;
-				url = req_url + "stage-info/" + (int)level + "/" + levelStageStartIndex + "/" + levelStageEndIndex;
+				url = req_url + "/stage-info/" + (int)level + "/" + levelStageStartIndex + "/" + levelStageEndIndex;
 			}
 
 			WWW www2 = new WWW(url);
@@ -230,7 +234,7 @@ public class NetworkManager : MonoBehaviour {
 
 			LevelInfo levelInfo = JsonUtility.FromJson<LevelInfo>(www2.text);
 
-			if (levelInfo.result)
+			if (levelInfo != null && levelInfo.result)
 			{
 				currentLevelstageIndexList = levelInfo.stage_count;
 
@@ -282,6 +286,14 @@ public class NetworkManager : MonoBehaviour {
 
                 SceneManager.LoadScene("Main");
 			}
+			else
+			{
+				Debug.LogError("ServerError!");
+			}
+		}
+		else
+		{
+			Debug.LogError("ServerError!");
 		}
 	}
 
@@ -302,11 +314,15 @@ public class NetworkManager : MonoBehaviour {
 
 		UserInfo userInfo = JsonUtility.FromJson<UserInfo>(www.text);
 
-		if (userInfo.result)
+		if (userInfo != null && userInfo.result)
 		{
 			this.userInfo = userInfo;
 
 			TitleManager.Ins.OnFinishedGetUserInfo();
+		}
+		else
+		{
+			Debug.LogError("ServerError!");
 		}
 	}
 
@@ -357,7 +373,7 @@ public class NetworkManager : MonoBehaviour {
 
 		UseItemInfo useItemInfo = JsonUtility.FromJson<UseItemInfo>(www.text);
 
-		if (useItemInfo.result)
+		if (useItemInfo != null && useItemInfo.result)
 		{
 			userInfo.hint_item_count = useItemInfo.hint_item_count;
 			userInfo.timer_item_count = useItemInfo.timer_item_count;
@@ -375,6 +391,10 @@ public class NetworkManager : MonoBehaviour {
 			{
 				GameManager.Ins.AddStageTimeByItem();
 			}
+		}
+		else
+		{
+			Debug.LogError("ServerError!");
 		}
 	}
 
@@ -395,7 +415,7 @@ public class NetworkManager : MonoBehaviour {
 
         UseItemInfo itemInfo = JsonUtility.FromJson<UseItemInfo>(www.text);
 
-        if (itemInfo.result)
+        if (itemInfo != null && itemInfo.result)
         {
             var hint_item_count = itemInfo.hint_item_count;
             var timer_item_count = itemInfo.timer_item_count;
@@ -403,6 +423,10 @@ public class NetworkManager : MonoBehaviour {
             Debug.Log("hint_item_count: "  + hint_item_count);
             Debug.Log("timer_item_count: " + timer_item_count);
         }
+		else
+		{
+			Debug.LogError("ServerError!");
+		}
     }
 
     // os별 특성에 맞춰서 아이템 정보 가져오기
@@ -427,9 +451,13 @@ public class NetworkManager : MonoBehaviour {
 
 		ItemInfo itemInfo = JsonUtility.FromJson<ItemInfo>(www.text);
 
-		if (itemInfo.result)
+		if (itemInfo != null && itemInfo.result)
 		{
 			ShopManager.Ins.UpdateItemsInfo(itemInfo.items);
+		}
+		else
+		{
+			Debug.LogError("ServerError!");
 		}
 	}
 }

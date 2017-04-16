@@ -219,6 +219,8 @@ public class GameManager : MonoBehaviour {
 			btnObj.GetComponent<RectTransform>().anchoredPosition = new Vector3(spots[i].x, spots[i].y, 0f);
 		}
 
+		leftAnswerButtonList.RemoveRange(spots.Length, leftAnswerButtonList.Count-spots.Length);
+
 		for(int i=0; i<spots.Length; i++)
 		{
 			AnswerButton btnObj;
@@ -238,6 +240,7 @@ public class GameManager : MonoBehaviour {
 			btnObj.GetComponent<RectTransform>().sizeDelta = new Vector2(rects[i].x, rects[i].y);
 			btnObj.GetComponent<RectTransform>().anchoredPosition = new Vector3(spots[i].x + leftImageOffset, spots[i].y, 0f);
 		}
+		rightAnswerButtonList.RemoveRange(spots.Length, rightAnswerButtonList.Count-spots.Length);
 
 		EnableAnswerButtons();
 	}

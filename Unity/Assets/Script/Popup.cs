@@ -9,7 +9,8 @@ public enum POPUPTYPE
 	EXITGAME,
 	MAINMENU,
 	BUYITEM,
-	ENDLEVEL
+	ENDLEVEL,
+	SERVER_ERROR
 }
 public class Popup : MonoBehaviour {
 	public POPUPTYPE type;
@@ -71,6 +72,9 @@ public class Popup : MonoBehaviour {
 				break;
 			case POPUPTYPE.ENDLEVEL:
 				body.text = "Good Job! Level Complete!";
+				break;
+			case POPUPTYPE.SERVER_ERROR:
+				body.text = "Sorry, Something wrong with GameServer.";
 				break;
 		}		
 	}
